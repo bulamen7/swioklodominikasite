@@ -10,9 +10,9 @@ import (
 
 // Config holds all application configuration.
 type Config struct {
-	Port     int
-	SMTP     SMTPConfig
-	EmailTo  string
+	Port      int
+	SMTP      SMTPConfig
+	EmailTo   string
 	EmailFrom string
 }
 
@@ -39,16 +39,28 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid SMTP_PORT: %w", err)
 	}
 
+	var missing []string
+
+	smtpHost := getEnvRequired("SMTP_HOST", &missing)
+	smtpUser := getEnvRequired("SMTP_USER", &missing)
+	smtpPass := getEnvRequired("SMTP_PASS", &missing)
+	emailFrom := getEnvRequired("EMAIL_FROM", &missing)
+	emailTo := getEnvRequired("EMAIL_TO", &missing)
+
+	if len(missing) > 0 {
+		return nil, fmt.Errorf("missing required environment variables: %v", missing)
+	}
+
 	cfg := &Config{
 		Port: port,
 		SMTP: SMTPConfig{
-			Host: getEnvRequired("SMTP_HOST"),
+			Host: smtpHost,
 			Port: smtpPort,
-			User: getEnvRequired("SMTP_USER"),
-			Pass: getEnvRequired("SMTP_PASS"),
+			User: smtpUser,
+			Pass: smtpPass,
 		},
-		EmailFrom: getEnvRequired("EMAIL_FROM"),
-		EmailTo:   getEnvRequired("EMAIL_TO"),
+		EmailFrom: emailFrom,
+		EmailTo:   emailTo,
 	}
 
 	return cfg, nil
@@ -61,10 +73,10 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func getEnvRequired(key string) string {
+func getEnvRequired(key string, missing *[]string) string {
 	val := os.Getenv(key)
 	if val == "" {
-		fmt.Printf("WARNING: required env var %s is not set\n", key)
+		*missing = append(*missing, key)
 	}
 	return val
 }

@@ -12,6 +12,17 @@ import AboutPL from './pages_pl/About';
 import ContactPL from './pages_pl/Contact';
 import AppointmentPL from './pages_pl/Appointment';
 
+function NotFound() {
+  const { language } = useLanguage();
+  return (
+    <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+      <h1>404</h1>
+      <p>{language === 'pl' ? 'Strona nie została znaleziona.' : 'Page not found.'}</p>
+      <a href="/">{language === 'pl' ? 'Wróć na stronę główną' : 'Go back home'}</a>
+    </div>
+  );
+}
+
 function AppContent() {
   const { language } = useLanguage();
   
@@ -30,6 +41,7 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/appointment" element={<Appointment />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

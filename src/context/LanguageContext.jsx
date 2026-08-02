@@ -1,9 +1,11 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(() => {
+    const saved = localStorage.getItem('preferredLanguage');
+    if (saved) return saved;
     const browserLang = navigator.language.toLowerCase();
     return browserLang.startsWith('pl') ? 'pl' : 'en';
   });
@@ -13,10 +15,9 @@ export function LanguageProvider({ children }) {
     localStorage.setItem('preferredLanguage', lang);
   };
 
-  // Check for saved preference on mount
-  useState(() => {
+  useEffect(() => {
     const saved = localStorage.getItem('preferredLanguage');
-    if (saved) setLanguage(saved);
+    if (saved && saved !== language) setLanguage(saved);
   }, []);
 
   return (

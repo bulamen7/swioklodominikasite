@@ -43,6 +43,9 @@ func (h *ContactHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Limit request body to 1MB
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+
 	var req contactRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, contactResponse{Error: "Invalid request body"})

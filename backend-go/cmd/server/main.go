@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gcclinux/dominikaswioklo/backend-go/internal/config"
 	"github.com/gcclinux/dominikaswioklo/backend-go/internal/handlers"
@@ -21,8 +22,11 @@ func main() {
 
 	contactHandler := handlers.NewContactHandler(m, cfg.EmailTo)
 
+	// Rate limit: 5 requests per minute per IP
+	limiter := middleware.NewRateLimiter(5, time.Minute)
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/api/contact", contactHandler.Handle)
+	mux.HandleFunc("/api/contact", limiter.Limit(contactHandler.Handle))
 
 	// Wrap with middleware
 	handler := middleware.CORS(mux)

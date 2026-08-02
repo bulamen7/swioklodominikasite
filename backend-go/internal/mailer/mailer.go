@@ -2,6 +2,7 @@ package mailer
 
 import (
 	"fmt"
+	"html"
 	"net/smtp"
 	"strings"
 
@@ -10,7 +11,7 @@ import (
 
 // Mailer handles sending emails via SMTP.
 type Mailer struct {
-	cfg config.SMTPConfig
+	cfg  config.SMTPConfig
 	from string
 }
 
@@ -58,5 +59,5 @@ func buildHTMLEmail(name, email, message string) string {
 <p><strong>Name:</strong> %s</p>
 <p><strong>Email:</strong> %s</p>
 <p><strong>Message:</strong></p>
-<p>%s</p>`, name, email, message)
+<p>%s</p>`, html.EscapeString(name), html.EscapeString(email), html.EscapeString(message))
 }
