@@ -18,7 +18,7 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	m := mailer.New(cfg.SMTP, cfg.EmailFrom)
+	m := mailer.New(cfg.ResendKey, cfg.EmailFrom)
 
 	contactHandler := handlers.NewContactHandler(m, cfg.EmailTo)
 

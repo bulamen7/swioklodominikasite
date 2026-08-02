@@ -1,57 +1,66 @@
 package mailer
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"html"
-	"net/smtp"
-	"strings"
-
-	"github.com/gcclinux/dominikaswioklo/backend-go/internal/config"
+	"io"
+	"net/http"
 )
 
-// Mailer handles sending emails via SMTP.
+// Mailer handles sending emails via Resend API.
 type Mailer struct {
-	cfg  config.SMTPConfig
-	from string
+	apiKey string
+	from   string
 }
 
 // New creates a new Mailer instance.
-func New(cfg config.SMTPConfig, from string) *Mailer {
+func New(apiKey, from string) *Mailer {
 	return &Mailer{
-		cfg:  cfg,
-		from: from,
+		apiKey: apiKey,
+		from:   from,
 	}
 }
 
-// SendContact sends a contact form email.
+// SendContact sends a contact form email via Resend.
 func (m *Mailer) SendContact(to, name, email, message string) error {
 	subject := fmt.Sprintf("New Contact Form Submission from %s", name)
+	htmlBody := buildHTMLEmail(name, email, message)
 
-	body := buildHTMLEmail(name, email, message)
+	payload := map[string]interface{}{
+		"from":     m.from,
+		"to":       []string{to},
+		"subject":  subject,
+		"html":     htmlBody,
+		"reply_to": email,
+	}
 
-	msg := buildMIMEMessage(m.from, to, subject, body)
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal email payload: %w", err)
+	}
 
-	addr := fmt.Sprintf("%s:%d", m.cfg.Host, m.cfg.Port)
-	auth := smtp.PlainAuth("", m.cfg.User, m.cfg.Pass, m.cfg.Host)
+	req, err := http.NewRequest("POST", "https://api.resend.com/emails", bytes.NewReader(body))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
 
-	err := smtp.SendMail(addr, auth, m.from, []string{to}, []byte(msg))
+	req.Header.Set("Authorization", "Bearer "+m.apiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to send email: %w", err)
 	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("resend API error (status %d): %s", resp.StatusCode, string(respBody))
+	}
 
 	return nil
-}
-
-func buildMIMEMessage(from, to, subject, htmlBody string) string {
-	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("From: %s\r\n", from))
-	sb.WriteString(fmt.Sprintf("To: %s\r\n", to))
-	sb.WriteString(fmt.Sprintf("Subject: %s\r\n", subject))
-	sb.WriteString("MIME-Version: 1.0\r\n")
-	sb.WriteString("Content-Type: text/html; charset=\"UTF-8\"\r\n")
-	sb.WriteString("\r\n")
-	sb.WriteString(htmlBody)
-	return sb.String()
 }
 
 func buildHTMLEmail(name, email, message string) string {

@@ -11,17 +11,9 @@ import (
 // Config holds all application configuration.
 type Config struct {
 	Port      int
-	SMTP      SMTPConfig
+	ResendKey string
 	EmailTo   string
 	EmailFrom string
-}
-
-// SMTPConfig holds SMTP server settings.
-type SMTPConfig struct {
-	Host string
-	Port int
-	User string
-	Pass string
 }
 
 // Load reads configuration from environment variables (and .env file if present).
@@ -34,16 +26,9 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid PORT: %w", err)
 	}
 
-	smtpPort, err := strconv.Atoi(getEnv("SMTP_PORT", "587"))
-	if err != nil {
-		return nil, fmt.Errorf("invalid SMTP_PORT: %w", err)
-	}
-
 	var missing []string
 
-	smtpHost := getEnvRequired("SMTP_HOST", &missing)
-	smtpUser := getEnvRequired("SMTP_USER", &missing)
-	smtpPass := getEnvRequired("SMTP_PASS", &missing)
+	resendKey := getEnvRequired("RESEND_API_KEY", &missing)
 	emailFrom := getEnvRequired("EMAIL_FROM", &missing)
 	emailTo := getEnvRequired("EMAIL_TO", &missing)
 
@@ -52,13 +37,8 @@ func Load() (*Config, error) {
 	}
 
 	cfg := &Config{
-		Port: port,
-		SMTP: SMTPConfig{
-			Host: smtpHost,
-			Port: smtpPort,
-			User: smtpUser,
-			Pass: smtpPass,
-		},
+		Port:      port,
+		ResendKey: resendKey,
 		EmailFrom: emailFrom,
 		EmailTo:   emailTo,
 	}
