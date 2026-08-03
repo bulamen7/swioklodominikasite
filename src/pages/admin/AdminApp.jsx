@@ -15,6 +15,12 @@ export default function AdminApp() {
   const [isRecovery, setIsRecovery] = useState(false);
 
   useEffect(() => {
+    // Check if URL contains recovery token (from password reset email)
+    const hash = window.location.hash;
+    if (hash.includes('type=recovery') || hash.includes('type=magiclink')) {
+      setIsRecovery(true);
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) fetchRole(session.user.id);
