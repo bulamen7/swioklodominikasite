@@ -13,13 +13,17 @@ export default function Login({ onLogin, onSwitch }) {
     setLoading(true);
     setError('');
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
       setError('Nieprawidłowy email lub hasło');
+      setLoading(false);
+    } else if (!data.user?.email_confirmed_at) {
+      await supabase.auth.signOut();
+      setError('Potwierdź swój adres email przed zalogowaniem. Sprawdź skrzynkę pocztową.');
       setLoading(false);
     } else {
       onLogin();
