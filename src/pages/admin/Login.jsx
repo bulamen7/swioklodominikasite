@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../../config/supabase';
 import './Admin.css';
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, onSwitch }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,8 +29,8 @@ export default function Login({ onLogin }) {
   return (
     <div className="admin-login">
       <div className="login-card">
-        <h1>Panel Administracyjny</h1>
-        <p>Zaloguj się aby zarządzać stroną</p>
+        <h1>Logowanie</h1>
+        <p>Zaloguj się do swojego konta</p>
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -51,6 +51,9 @@ export default function Login({ onLogin }) {
             {loading ? 'Logowanie...' : 'Zaloguj się'}
           </button>
         </form>
+        <p className="auth-switch">
+          Nie masz konta? <button onClick={onSwitch} className="link-btn">Zarejestruj się</button>
+        </p>
       </div>
     </div>
   );

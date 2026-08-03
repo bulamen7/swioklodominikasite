@@ -225,3 +225,112 @@
     text-align: center;
   }
 }
+
+
+/* Auth switch */
+.auth-switch {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+/* Patient Dashboard */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-email {
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-subtext {
+  color: var(--text-light);
+  margin-top: 0.5rem;
+}
+
+.patient-bookings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.patient-booking-card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #ddd;
+}
+
+.status-card-pending { border-left-color: #ffc107; }
+.status-card-confirmed { border-left-color: #28a745; }
+.status-card-cancelled { border-left-color: #dc3545; }
+.status-card-completed { border-left-color: #17a2b8; }
+
+.booking-date {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.booking-date strong {
+  font-size: 1.1rem;
+}
+
+.booking-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.booking-service {
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.status-pill {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-pill.status-pending { background: #fff3cd; color: #856404; }
+.status-pill.status-confirmed { background: #d4edda; color: #155724; }
+.status-pill.status-cancelled { background: #f8d7da; color: #721c24; }
+.status-pill.status-completed { background: #d1ecf1; color: #0c5460; }
+
+@media (max-width: 768px) {
+  .patient-booking-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-right {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

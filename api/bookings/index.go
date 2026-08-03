@@ -171,7 +171,7 @@ func handleCreateBooking(ctx context.Context, conn *pgx.Conn, w http.ResponseWri
 
 	var id string
 	var createdAt time.Time
-	err = conn.QueryRow(ctx,
+	err := conn.QueryRow(ctx,
 		`INSERT INTO bookings (client_name, client_email, phone, service, date, time_slot, notes)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7)
 		 RETURNING id, created_at`,

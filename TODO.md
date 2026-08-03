@@ -32,7 +32,7 @@
 - [x] Dodac footer z linkami i informacjami
 
 ### Faza 2 — Funkcjonalnosc
-- [ ] Panel administracyjny (login + dashboard)
+- [x] Panel administracyjny (login + dashboard)
   - Podglad wiadomosci z formularza
   - Edycja cennika
   - Zarzadzanie dostepnoscia
