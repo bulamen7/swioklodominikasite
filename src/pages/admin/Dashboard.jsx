@@ -86,7 +86,7 @@ export default function Dashboard({ onLogout }) {
                 </thead>
                 <tbody>
                   {bookings.map((booking) => (
-                    <tr key={booking.id}>
+                    <tr key={booking.id} className={`row-${booking.status}`}>
                       <td>{booking.date}</td>
                       <td>{booking.time_slot}</td>
                       <td>{booking.client_name}</td>

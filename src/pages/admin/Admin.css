@@ -158,6 +158,22 @@
   background: rgba(45, 95, 93, 0.03);
 }
 
+.admin-table tr.row-pending {
+  background: #fff8e6;
+}
+
+.admin-table tr.row-confirmed {
+  background: #eafaf0;
+}
+
+.admin-table tr.row-cancelled {
+  background: #fdf0f0;
+}
+
+.admin-table tr.row-completed {
+  background: #edf7fc;
+}
+
 .status-badge {
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
@@ -166,10 +182,10 @@
   cursor: pointer;
 }
 
-.status-pending { background: #fff3cd; }
-.status-confirmed { background: #d4edda; }
-.status-cancelled { background: #f8d7da; }
-.status-completed { background: #d1ecf1; }
+.status-pending { background: #fff3cd; color: #856404; }
+.status-confirmed { background: #d4edda; color: #155724; }
+.status-cancelled { background: #f8d7da; color: #721c24; }
+.status-completed { background: #d1ecf1; color: #0c5460; }
 
 .delete-btn {
   background: #dc3545;
