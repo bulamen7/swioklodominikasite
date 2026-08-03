@@ -42,6 +42,20 @@ export default function PatientDashboard({ user, onLogout }) {
     onLogout();
   };
 
+  const handleCancel = async (id) => {
+    if (!window.confirm('Czy na pewno chcesz anulować tę wizytę?')) return;
+
+    const response = await fetch(`/api/bookings?id=${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'cancelled' }),
+    });
+
+    if (response.ok) {
+      setBookings(bookings.map((b) => (b.id === id ? { ...b, status: 'cancelled' } : b)));
+    }
+  };
+
   const statusLabels = {
     pending: 'Oczekująca',
     confirmed: 'Potwierdzona',
@@ -81,6 +95,11 @@ export default function PatientDashboard({ user, onLogout }) {
                     <span className={`status-pill status-${booking.status}`}>
                       {statusLabels[booking.status] || booking.status}
                     </span>
+                    {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                      <button className="cancel-btn" onClick={() => handleCancel(booking.id)}>
+                        Anuluj
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

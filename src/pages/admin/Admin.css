@@ -334,3 +334,20 @@
     gap: 0.5rem;
   }
 }
+
+
+.cancel-btn {
+  background: none;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #dc3545;
+  color: var(--white);
+}
