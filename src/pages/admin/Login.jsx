@@ -52,7 +52,7 @@ export default function Login({ onLogin, onSwitch }) {
           </button>
         </form>
         <p className="auth-switch">
-          Nie masz konta? <button onClick={onSwitch} className="link-btn">Zarejestruj się</button>
+          <button onClick={onSwitch} className="link-btn">Zarejestruj się</button>
         </p>
       </div>
     </div>
