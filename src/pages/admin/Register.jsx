@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { supabase } from '../../config/supabase';
+import { useLanguage } from '../../context/LanguageContext';
 import './Admin.css';
 
 export default function Register({ onSwitch }) {
+  const { language } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -11,44 +13,60 @@ export default function Register({ onSwitch }) {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const t = language === 'pl' ? {
+    title: 'Rejestracja',
+    subtitle: 'Utwórz konto aby zarządzać swoimi wizytami',
+    name: 'Imię i nazwisko',
+    phone: 'Telefon (opcjonalnie)',
+    password: 'Hasło (min. 6 znaków)',
+    loading: 'Rejestracja...',
+    submit: 'Zarejestruj się',
+    hasAccount: 'Masz już konto?',
+    login: 'Zaloguj się',
+    successTitle: 'Rejestracja udana!',
+    successMsg: 'Sprawdź email i potwierdź konto aby się zalogować.',
+    goToLogin: 'Przejdź do logowania',
+    errorShort: 'Hasło musi mieć minimum 6 znaków',
+    errorExists: 'Ten email jest już zarejestrowany',
+    errorGeneric: 'Błąd rejestracji: ',
+  } : {
+    title: 'Register',
+    subtitle: 'Create an account to manage your appointments',
+    name: 'Full name',
+    phone: 'Phone (optional)',
+    password: 'Password (min. 6 characters)',
+    loading: 'Registering...',
+    submit: 'Sign Up',
+    hasAccount: 'Already have an account?',
+    login: 'Log in',
+    successTitle: 'Registration successful!',
+    successMsg: 'Check your email and confirm your account to log in.',
+    goToLogin: 'Go to login',
+    errorShort: 'Password must be at least 6 characters',
+    errorExists: 'This email is already registered',
+    errorGeneric: 'Registration error: ',
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     if (password.length < 6) {
-      setError('Hasło musi mieć minimum 6 znaków');
+      setError(t.errorShort);
       setLoading(false);
       return;
     }
 
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-          phone: phone,
-        },
-      },
+      email, password,
+      options: { data: { full_name: fullName, phone } },
     });
 
     if (error) {
-      if (error.message === 'User already registered') {
-        setError('Ten email jest już zarejestrowany');
-      } else {
-        setError('Błąd rejestracji: ' + error.message);
-      }
+      setError(error.message === 'User already registered' ? t.errorExists : t.errorGeneric + error.message);
       setLoading(false);
     } else {
-      // Update profile with full_name and phone
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from('profiles').update({
-          full_name: fullName,
-          phone: phone,
-        }).eq('id', user.id);
-      }
       setSuccess(true);
       setLoading(false);
     }
@@ -58,9 +76,9 @@ export default function Register({ onSwitch }) {
     return (
       <div className="admin-login">
         <div className="login-card">
-          <h1>Rejestracja udana!</h1>
-          <p>Twoje konto zostało utworzone. Możesz się teraz zalogować.</p>
-          <button onClick={onSwitch}>Przejdź do logowania</button>
+          <h1>{t.successTitle}</h1>
+          <p>{t.successMsg}</p>
+          <button onClick={onSwitch}>{t.goToLogin}</button>
         </div>
       </div>
     );
@@ -69,43 +87,18 @@ export default function Register({ onSwitch }) {
   return (
     <div className="admin-login">
       <div className="login-card">
-        <h1>Rejestracja</h1>
-        <p>Utwórz konto aby zarządzać swoimi wizytami</p>
+        <h1>{t.title}</h1>
+        <p>{t.subtitle}</p>
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Imię i nazwisko"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="tel"
-            placeholder="Telefon (opcjonalnie)"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Hasło (min. 6 znaków)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <input type="text" placeholder={t.name} value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="tel" placeholder={t.phone} value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <input type="password" placeholder={t.password} value={password} onChange={(e) => setPassword(e.target.value)} required />
           {error && <p className="login-error">{error}</p>}
-          <button type="submit" disabled={loading}>
-            {loading ? 'Rejestracja...' : 'Zarejestruj się'}
-          </button>
+          <button type="submit" disabled={loading}>{loading ? t.loading : t.submit}</button>
         </form>
         <p className="auth-switch">
-          Masz już konto? <button onClick={onSwitch} className="link-btn">Zaloguj się</button>
+          {t.hasAccount} <button onClick={onSwitch} className="link-btn">{t.login}</button>
         </p>
       </div>
     </div>

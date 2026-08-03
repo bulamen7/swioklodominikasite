@@ -85,7 +85,7 @@ export default function App() {
   }
 
   if (isRecovery && !recoveryReady) {
-    return <div style={{ textAlign: 'center', padding: '4rem' }}>Ładowanie...</div>;
+    return <div style={{ textAlign: 'center', padding: '4rem' }}>Loading...</div>;
   }
 
   return (

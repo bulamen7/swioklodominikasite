@@ -62,7 +62,7 @@ export default function AdminApp() {
   };
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '4rem' }}>Ładowanie...</div>;
+    return <div style={{ textAlign: 'center', padding: '4rem' }}>Loading...</div>;
   }
 
   // Show reset password form after clicking email link

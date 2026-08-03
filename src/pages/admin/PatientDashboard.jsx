@@ -1,9 +1,76 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
+import { useLanguage } from '../../context/LanguageContext';
 import ProfileModal from './ProfileModal';
 import './Admin.css';
 
 export default function PatientDashboard({ user, onLogout }) {
+  const { language } = useLanguage();
+  const t = language === 'pl' ? {
+    myVisits: 'Moje Wizyty',
+    profile: 'Profil',
+    changePassword: 'Zmien haslo',
+    logout: 'Wyloguj',
+    loading: 'Ładowanie...',
+    noBookings: 'Nie masz jeszcze żadnych rezerwacji',
+    noBookingsHint: 'Umów wizytę przez kalendarz na stronie głównej',
+    visit: 'Wizyta',
+    cancel: 'Anuluj',
+    invoice: 'Faktura',
+    pending: 'Oczekująca',
+    confirmed: 'Potwierdzona',
+    cancelled: 'Anulowana',
+    completed: 'Zakończona',
+    changePasswordTitle: 'Zmień hasło',
+    currentPassword: 'Aktualne hasło',
+    newPassword: 'Nowe hasło (min. 6 znaków)',
+    confirmNewPassword: 'Powtórz nowe hasło',
+    changePasswordBtn: 'Zmień hasło',
+    close: 'Zamknij',
+    confirmCancel: 'Czy na pewno chcesz anulować tę wizytę?',
+    errorCurrentRequired: 'Podaj aktualne hasło',
+    errorMinLength: 'Nowe hasło musi mieć minimum 6 znaków',
+    errorMismatch: 'Hasła nie są takie same',
+    errorCurrentIncorrect: 'Aktualne hasło jest nieprawidłowe',
+    errorGeneric: 'Błąd: ',
+    passwordChanged: 'Hasło zmienione!',
+  } : {
+    myVisits: 'My Appointments',
+    profile: 'Profile',
+    changePassword: 'Change password',
+    logout: 'Log out',
+    loading: 'Loading...',
+    noBookings: 'You don\'t have any bookings yet',
+    noBookingsHint: 'Book an appointment via the calendar on the homepage',
+    visit: 'Appointment',
+    cancel: 'Cancel',
+    invoice: 'Invoice',
+    pending: 'Pending',
+    confirmed: 'Confirmed',
+    cancelled: 'Cancelled',
+    completed: 'Completed',
+    changePasswordTitle: 'Change password',
+    currentPassword: 'Current password',
+    newPassword: 'New password (min. 6 characters)',
+    confirmNewPassword: 'Repeat new password',
+    changePasswordBtn: 'Change password',
+    close: 'Close',
+    confirmCancel: 'Are you sure you want to cancel this appointment?',
+    errorCurrentRequired: 'Enter your current password',
+    errorMinLength: 'New password must be at least 6 characters',
+    errorMismatch: 'Passwords do not match',
+    errorCurrentIncorrect: 'Current password is incorrect',
+    errorGeneric: 'Error: ',
+    passwordChanged: 'Password changed!',
+  };
+
+  const statusLabels = {
+    pending: t.pending,
+    confirmed: t.confirmed,
+    cancelled: t.cancelled,
+    completed: t.completed,
+  };
+
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
@@ -54,15 +121,15 @@ export default function PatientDashboard({ user, onLogout }) {
     setPasswordMsg('');
 
     if (!currentPassword) {
-      setPasswordMsg('Podaj aktualne hasło');
+      setPasswordMsg(t.errorCurrentRequired);
       return;
     }
     if (newPassword.length < 6) {
-      setPasswordMsg('Nowe hasło musi mieć minimum 6 znaków');
+      setPasswordMsg(t.errorMinLength);
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordMsg('Hasła nie są takie same');
+      setPasswordMsg(t.errorMismatch);
       return;
     }
 
@@ -72,16 +139,16 @@ export default function PatientDashboard({ user, onLogout }) {
       password: currentPassword,
     });
     if (signInError) {
-      setPasswordMsg('Aktualne hasło jest nieprawidłowe');
+      setPasswordMsg(t.errorCurrentIncorrect);
       return;
     }
 
     // Update to new password
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
-      setPasswordMsg('Błąd: ' + error.message);
+      setPasswordMsg(t.errorGeneric + error.message);
     } else {
-      setPasswordMsg('Hasło zmienione!');
+      setPasswordMsg(t.passwordChanged);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -90,7 +157,7 @@ export default function PatientDashboard({ user, onLogout }) {
   };
 
   const handleCancel = async (id) => {
-    if (!window.confirm('Czy na pewno chcesz anulować tę wizytę?')) return;
+    if (!window.confirm(t.confirmCancel)) return;
 
     const response = await fetch(`/api/bookings?id=${id}`, {
       method: 'PUT',
@@ -103,33 +170,26 @@ export default function PatientDashboard({ user, onLogout }) {
     }
   };
 
-  const statusLabels = {
-    pending: 'Oczekująca',
-    confirmed: 'Potwierdzona',
-    cancelled: 'Anulowana',
-    completed: 'Zakończona',
-  };
-
   return (
     <div className="admin-dashboard">
       <header className="admin-header">
-        <h1>Moje Wizyty</h1>
+        <h1>{t.myVisits}</h1>
         <div className="header-right">
           <span className="user-email">{profile?.full_name || user.email}</span>
-          <button className="change-password-btn" onClick={() => setShowProfile(true)}>Profil</button>
-          <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>Zmien haslo</button>
-          <button className="logout-btn" onClick={handleLogout}>Wyloguj</button>
+          <button className="change-password-btn" onClick={() => setShowProfile(true)}>{t.profile}</button>
+          <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>{t.changePassword}</button>
+          <button className="logout-btn" onClick={handleLogout}>{t.logout}</button>
         </div>
       </header>
 
       <main className="admin-content">
         <div className="bookings-list">
           {loading ? (
-            <p className="loading-text">Ładowanie...</p>
+            <p className="loading-text">{t.loading}</p>
           ) : bookings.length === 0 ? (
             <div className="empty-state">
-              <p className="empty-text">Nie masz jeszcze żadnych rezerwacji</p>
-              <p className="empty-subtext">Umów wizytę przez kalendarz na stronie głównej</p>
+              <p className="empty-text">{t.noBookings}</p>
+              <p className="empty-subtext">{t.noBookingsHint}</p>
             </div>
           ) : (
             <div className="patient-bookings">
@@ -140,18 +200,18 @@ export default function PatientDashboard({ user, onLogout }) {
                     <span>{booking.time_slot}</span>
                   </div>
                   <div className="booking-details">
-                    <p className="booking-service">{booking.service || 'Wizyta'}</p>
+                    <p className="booking-service">{booking.service || t.visit}</p>
                     <span className={`status-pill status-${booking.status}`}>
                       {statusLabels[booking.status] || booking.status}
                     </span>
                     {booking.status === 'pending' && (
                       <button className="cancel-btn" onClick={() => handleCancel(booking.id)}>
-                        Anuluj
+                        {t.cancel}
                       </button>
                     )}
                     {booking.status === 'completed' && (
                       <a href={`/api/invoice?id=${booking.id}`} className="invoice-btn" target="_blank" rel="noopener noreferrer">
-                        Faktura
+                        {t.invoice}
                       </a>
                     )}
                   </div>
@@ -164,11 +224,11 @@ export default function PatientDashboard({ user, onLogout }) {
       {showChangePassword && (
         <div className="login-prompt-overlay" onClick={() => setShowChangePassword(false)}>
           <div className="login-prompt" onClick={(e) => e.stopPropagation()}>
-            <h3>Zmień hasło</h3>
+            <h3>{t.changePasswordTitle}</h3>
             <form onSubmit={handleChangePassword}>
               <input
                 type="password"
-                placeholder="Aktualne hasło"
+                placeholder={t.currentPassword}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 required
@@ -176,7 +236,7 @@ export default function PatientDashboard({ user, onLogout }) {
               />
               <input
                 type="password"
-                placeholder="Nowe hasło (min. 6 znaków)"
+                placeholder={t.newPassword}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
@@ -184,16 +244,16 @@ export default function PatientDashboard({ user, onLogout }) {
               />
               <input
                 type="password"
-                placeholder="Powtórz nowe hasło"
+                placeholder={t.confirmNewPassword}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '1rem' }}
               />
-              {passwordMsg && <p style={{ color: passwordMsg.includes('zmienione') ? '#28a745' : '#dc3545', fontSize: '0.9rem' }}>{passwordMsg}</p>}
-              <button type="submit" className="login-prompt-btn" style={{ width: '100%', border: 'none', cursor: 'pointer' }}>Zmień hasło</button>
+              {passwordMsg && <p style={{ color: passwordMsg.includes(t.passwordChanged) ? '#28a745' : '#dc3545', fontSize: '0.9rem' }}>{passwordMsg}</p>}
+              <button type="submit" className="login-prompt-btn" style={{ width: '100%', border: 'none', cursor: 'pointer' }}>{t.changePasswordBtn}</button>
             </form>
-            <button className="login-prompt-close" onClick={() => setShowChangePassword(false)}>Zamknij</button>
+            <button className="login-prompt-close" onClick={() => setShowChangePassword(false)}>{t.close}</button>
           </div>
         </div>
       )}
