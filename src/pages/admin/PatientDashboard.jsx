@@ -8,7 +8,9 @@ export default function PatientDashboard({ user, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMsg, setPasswordMsg] = useState('');
   const [showProfile, setShowProfile] = useState(false);
 
@@ -49,16 +51,40 @@ export default function PatientDashboard({ user, onLogout }) {
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    if (newPassword.length < 6) {
-      setPasswordMsg('Hasło musi mieć minimum 6 znaków');
+    setPasswordMsg('');
+
+    if (!currentPassword) {
+      setPasswordMsg('Podaj aktualne hasło');
       return;
     }
+    if (newPassword.length < 6) {
+      setPasswordMsg('Nowe hasło musi mieć minimum 6 znaków');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordMsg('Hasła nie są takie same');
+      return;
+    }
+
+    // Verify current password by re-authenticating
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: currentPassword,
+    });
+    if (signInError) {
+      setPasswordMsg('Aktualne hasło jest nieprawidłowe');
+      return;
+    }
+
+    // Update to new password
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
       setPasswordMsg('Błąd: ' + error.message);
     } else {
       setPasswordMsg('Hasło zmienione!');
+      setCurrentPassword('');
       setNewPassword('');
+      setConfirmPassword('');
       setTimeout(() => setShowChangePassword(false), 2000);
     }
   };
@@ -142,14 +168,30 @@ export default function PatientDashboard({ user, onLogout }) {
             <form onSubmit={handleChangePassword}>
               <input
                 type="password"
+                placeholder="Aktualne hasło"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '1rem' }}
+              />
+              <input
+                type="password"
                 placeholder="Nowe hasło (min. 6 znaków)"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
                 style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '1rem' }}
               />
-              {passwordMsg && <p style={{ color: passwordMsg.includes('Błąd') ? '#dc3545' : '#28a745', fontSize: '0.9rem' }}>{passwordMsg}</p>}
-              <button type="submit" className="login-prompt-btn" style={{ width: '100%', border: 'none', cursor: 'pointer' }}>Zapisz</button>
+              <input
+                type="password"
+                placeholder="Powtórz nowe hasło"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '1rem' }}
+              />
+              {passwordMsg && <p style={{ color: passwordMsg.includes('zmienione') ? '#28a745' : '#dc3545', fontSize: '0.9rem' }}>{passwordMsg}</p>}
+              <button type="submit" className="login-prompt-btn" style={{ width: '100%', border: 'none', cursor: 'pointer' }}>Zmień hasło</button>
             </form>
             <button className="login-prompt-close" onClick={() => setShowChangePassword(false)}>Zamknij</button>
           </div>
