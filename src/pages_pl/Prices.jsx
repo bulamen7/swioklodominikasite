@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import CalendarModal from '../components/booking/CalendarModal';
+import BookingModal from '../components/booking/BookingModal';
 import { supabase } from '../config/supabase';
 import './Prices.css';
 
@@ -100,7 +100,7 @@ export default function Prices() {
           <p>Akceptujemy większość głównych planów ubezpieczeniowych. Skontaktuj się z nami, aby zweryfikować swoje ubezpieczenie. Dostępne opcje płatności prywatnej i ruchoma skala opłat na życzenie.</p>
         </div>
       </div>
-      <CalendarModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} language="pl" />
       {showLoginPrompt && (
         <div className="login-prompt-overlay" onClick={() => setShowLoginPrompt(false)}>
           <div className="login-prompt" onClick={(e) => e.stopPropagation()}>

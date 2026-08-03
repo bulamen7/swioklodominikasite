@@ -92,8 +92,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 func handleGetBookings(ctx context.Context, conn *pgx.Conn, w http.ResponseWriter, r *http.Request) {
 	// GET /api/bookings?id=xxx — single booking
+	// GET /api/bookings?date=xxx — bookings for a date
 	// GET /api/bookings — all bookings
 	id := r.URL.Query().Get("id")
+	date := r.URL.Query().Get("date")
 
 	if id != "" {
 		row := conn.QueryRow(ctx,
@@ -101,20 +103,29 @@ func handleGetBookings(ctx context.Context, conn *pgx.Conn, w http.ResponseWrite
 
 		var b Booking
 		var createdAt time.Time
-		var date time.Time
-		err := row.Scan(&b.ID, &b.ClientName, &b.ClientEmail, &b.Phone, &b.Service, &date, &b.TimeSlot, &b.Notes, &b.Status, &createdAt)
+		var bDate time.Time
+		err := row.Scan(&b.ID, &b.ClientName, &b.ClientEmail, &b.Phone, &b.Service, &bDate, &b.TimeSlot, &b.Notes, &b.Status, &createdAt)
 		if err != nil {
 			writeBookingsJSON(w, http.StatusNotFound, bookingsResponse{Error: "Booking not found"})
 			return
 		}
-		b.Date = date.Format("2006-01-02")
+		b.Date = bDate.Format("2006-01-02")
 		b.CreatedAt = createdAt.Format(time.RFC3339)
 		writeBookingsJSON(w, http.StatusOK, bookingsResponse{Data: b})
 		return
 	}
 
-	rows, err := conn.Query(ctx,
-		"SELECT id, client_name, client_email, phone, service, date, time_slot, notes, status, created_at FROM bookings ORDER BY date ASC, time_slot ASC")
+	var query string
+	var args []interface{}
+
+	if date != "" {
+		query = "SELECT id, client_name, client_email, phone, service, date, time_slot, notes, status, created_at FROM bookings WHERE date = $1 ORDER BY time_slot ASC"
+		args = []interface{}{date}
+	} else {
+		query = "SELECT id, client_name, client_email, phone, service, date, time_slot, notes, status, created_at FROM bookings ORDER BY date ASC, time_slot ASC"
+	}
+
+	rows, err := conn.Query(ctx, query, args...)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Query error: %v\n", err)
 		writeBookingsJSON(w, http.StatusInternalServerError, bookingsResponse{Error: "Failed to fetch bookings: " + err.Error()})
