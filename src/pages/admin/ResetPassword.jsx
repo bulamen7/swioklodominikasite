@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../../config/supabase';
 import './Admin.css';
 
-export default function ResetPassword() {
+export default function ResetPassword({ onDone }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,7 +42,9 @@ export default function ResetPassword() {
         <div className="login-card">
           <h1>Hasło zmienione!</h1>
           <p>Możesz się teraz zalogować nowym hasłem.</p>
-          <a href="/#/admin" className="login-card-btn">Przejdź do logowania</a>
+          <button onClick={onDone || (() => { window.location.href = '/#/admin'; })} className="login-card-btn" style={{ border: 'none', cursor: 'pointer' }}>
+            Przejdź do logowania
+          </button>
         </div>
       </div>
     );
