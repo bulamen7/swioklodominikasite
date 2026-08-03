@@ -34,9 +34,11 @@ export default function Register({ onSwitch }) {
     });
 
     if (error) {
-      setError(error.message === 'User already registered'
-        ? 'Ten email jest już zarejestrowany'
-        : 'Błąd rejestracji: ' + error.message);
+      if (error.message === 'User already registered') {
+        setError('Ten email jest już zarejestrowany');
+      } else {
+        setError('Błąd rejestracji: ' + error.message);
+      }
       setLoading(false);
     } else {
       // Update profile with full_name and phone

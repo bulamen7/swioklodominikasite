@@ -1,9 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import CalendarModal from '../components/booking/CalendarModal';
+import { supabase } from '../config/supabase';
 import './Prices.css';
 
 export default function Prices() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+  }, []);
+
+  const handleBookClick = () => {
+    if (isLoggedIn) {
+      setIsModalOpen(true);
+    } else {
+      setShowLoginPrompt(true);
+    }
+  };
   
   const services = [
     {
@@ -72,7 +90,7 @@ export default function Prices() {
                   <li key={idx}>{feature}</li>
                 ))}
               </ul>
-              <button className="book-button" onClick={() => setIsModalOpen(true)}>Umów Wizytę</button>
+              <button className="book-button" onClick={handleBookClick}>Umów Wizytę</button>
             </div>
           ))}
         </div>
@@ -83,6 +101,16 @@ export default function Prices() {
         </div>
       </div>
       <CalendarModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {showLoginPrompt && (
+        <div className="login-prompt-overlay" onClick={() => setShowLoginPrompt(false)}>
+          <div className="login-prompt" onClick={(e) => e.stopPropagation()}>
+            <h3>Zaloguj się aby umówić wizytę</h3>
+            <p>Musisz mieć konto, aby zarezerwować termin.</p>
+            <Link to="/admin" className="login-prompt-btn">Zaloguj się / Zarejestruj</Link>
+            <button className="login-prompt-close" onClick={() => setShowLoginPrompt(false)}>Zamknij</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
