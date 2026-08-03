@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"regexp"
 )
 
 type contactRequest struct {
@@ -49,6 +50,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	emailRegex := regexp.MustCompile(`^[^\s@]+@[^\s@]+\.[^\s@]+$`)
+	if !emailRegex.MatchString(req.Email) {
+		writeJSON(w, http.StatusBadRequest, contactResponse{Error: "Invalid email address"})
+		return
+	}
+
 	if err := sendEmail(req.Name, req.Email, req.Message); err != nil {
 		fmt.Fprintf(os.Stderr, "Email error: %v\n", err)
 		writeJSON(w, http.StatusInternalServerError, contactResponse{Error: "Failed to send email"})
@@ -76,7 +83,7 @@ func sendEmail(name, email, message string) error {
 
 	payload := map[string]interface{}{
 		"from":     emailFrom,
-		"to":      []string{emailTo},
+		"to":       []string{emailTo},
 		"subject":  subject,
 		"html":     htmlBody,
 		"reply_to": email,

@@ -24,7 +24,7 @@
 ## Nastepne kroki (priorytetowo)
 
 ### Faza 1 — Poprawa UX i stabilnosci
-- [ ] Dodac loading state na formularz kontaktowy (spinner/animacja)
+- [x] Dodac loading state na formularz kontaktowy (spinner/animacja)
 - [ ] Dodac walidacje email po stronie frontendu (regex)
 - [ ] Dodac meta tagi SEO (title, description, og:image)
 - [ ] Dodac favicon
