@@ -13,12 +13,12 @@ import (
 )
 
 type invoiceBooking struct {
-	Date       string
-	TimeSlot   string
-	Service    string
-	ClientName string
+	Date        string
+	TimeSlot    string
+	Service     string
+	ClientName  string
 	ClientEmail string
-	Price      float64
+	Price       float64
 }
 
 // Handler generates invoice PDFs.
@@ -85,7 +85,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		b.Price = 150.00
 		clientName = b.ClientName
 		bookings = append(bookings, b)
-		invoiceTitle = fmt.Sprintf("FV/%s/%s", date.Format("01"), date.Format("2006"))
+
+		// Get or create invoice number
+		invoiceTitle = getOrCreateInvoiceNumber(ctx, conn, bookingID, date)
 	} else if month != "" {
 		// Monthly summary invoice (admin)
 		rows, err := conn.Query(ctx,
