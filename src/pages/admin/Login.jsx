@@ -59,7 +59,7 @@ export default function Login({ onLogin, onSwitch, onForgotPassword }) {
           <button onClick={() => onForgotPassword()} className="link-btn">Nie pamiętam hasła</button>
         </p>
         <p className="auth-switch">
-          Nie masz konta? <button onClick={onSwitch} className="link-btn">Zarejestruj się</button>
+           <button onClick={onSwitch} className="link-btn">Zarejestruj się</button>
         </p>
       </div>
     </div>

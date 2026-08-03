@@ -23,16 +23,19 @@ export default function AdminApp() {
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session) fetchRole(session.user.id);
+      if (session && !isRecovery) fetchRole(session.user.id);
       else setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
       if (event === 'PASSWORD_RECOVERY') {
         setIsRecovery(true);
+        setSession(session);
+        setLoading(false);
+        return;
       }
-      if (session) fetchRole(session.user.id);
+      setSession(session);
+      if (session && !isRecovery) fetchRole(session.user.id);
       else {
         setRole(null);
         setLoading(false);

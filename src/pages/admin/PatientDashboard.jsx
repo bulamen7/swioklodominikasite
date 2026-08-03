@@ -6,6 +6,9 @@ export default function PatientDashboard({ user, onLogout }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordMsg, setPasswordMsg] = useState('');
 
   useEffect(() => {
     fetchProfile();
@@ -42,6 +45,22 @@ export default function PatientDashboard({ user, onLogout }) {
     onLogout();
   };
 
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setPasswordMsg('Hasło musi mieć minimum 6 znaków');
+      return;
+    }
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      setPasswordMsg('Błąd: ' + error.message);
+    } else {
+      setPasswordMsg('Hasło zmienione!');
+      setNewPassword('');
+      setTimeout(() => setShowChangePassword(false), 2000);
+    }
+  };
+
   const handleCancel = async (id) => {
     if (!window.confirm('Czy na pewno chcesz anulować tę wizytę?')) return;
 
@@ -69,6 +88,7 @@ export default function PatientDashboard({ user, onLogout }) {
         <h1>Moje Wizyty</h1>
         <div className="header-right">
           <span className="user-email">{profile?.full_name || user.email}</span>
+          <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>Zmień hasło</button>
           <button className="logout-btn" onClick={handleLogout}>Wyloguj</button>
         </div>
       </header>
@@ -112,6 +132,26 @@ export default function PatientDashboard({ user, onLogout }) {
           )}
         </div>
       </main>
+      {showChangePassword && (
+        <div className="login-prompt-overlay" onClick={() => setShowChangePassword(false)}>
+          <div className="login-prompt" onClick={(e) => e.stopPropagation()}>
+            <h3>Zmień hasło</h3>
+            <form onSubmit={handleChangePassword}>
+              <input
+                type="password"
+                placeholder="Nowe hasło (min. 6 znaków)"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '1rem' }}
+              />
+              {passwordMsg && <p style={{ color: passwordMsg.includes('Błąd') ? '#dc3545' : '#28a745', fontSize: '0.9rem' }}>{passwordMsg}</p>}
+              <button type="submit" className="login-prompt-btn" style={{ width: '100%', border: 'none', cursor: 'pointer' }}>Zapisz</button>
+            </form>
+            <button className="login-prompt-close" onClick={() => setShowChangePassword(false)}>Zamknij</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
