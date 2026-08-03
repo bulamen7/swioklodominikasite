@@ -63,7 +63,8 @@ func BookingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := pgx.Connect(ctx, dbURL)
 	if err != nil {
-		writeBookingsJSON(w, http.StatusInternalServerError, bookingsResponse{Error: "Database connection failed"})
+		fmt.Fprintf(os.Stderr, "DB connection error: %v\n", err)
+		writeBookingsJSON(w, http.StatusInternalServerError, bookingsResponse{Error: "Database connection failed: " + err.Error()})
 		return
 	}
 	defer conn.Close(ctx)
