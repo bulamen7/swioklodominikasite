@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
+import ProfileModal from './ProfileModal';
 import './Admin.css';
 
 export default function PatientDashboard({ user, onLogout }) {
@@ -9,6 +10,7 @@ export default function PatientDashboard({ user, onLogout }) {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [passwordMsg, setPasswordMsg] = useState('');
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -88,7 +90,8 @@ export default function PatientDashboard({ user, onLogout }) {
         <h1>Moje Wizyty</h1>
         <div className="header-right">
           <span className="user-email">{profile?.full_name || user.email}</span>
-          <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>Zmień hasło</button>
+          <button className="change-password-btn" onClick={() => setShowProfile(true)}>Profil</button>
+          <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>Zmien haslo</button>
           <button className="logout-btn" onClick={handleLogout}>Wyloguj</button>
         </div>
       </header>
@@ -151,6 +154,10 @@ export default function PatientDashboard({ user, onLogout }) {
             <button className="login-prompt-close" onClick={() => setShowChangePassword(false)}>Zamknij</button>
           </div>
         </div>
+      )}
+
+      {showProfile && (
+        <ProfileModal user={user} onClose={() => { setShowProfile(false); fetchProfile(); }} />
       )}
     </div>
   );

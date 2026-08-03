@@ -220,6 +220,11 @@ func handleCreateBooking(ctx context.Context, conn *pgx.Conn, w http.ResponseWri
 		fmt.Fprintf(os.Stderr, "Booking confirmation email error: %v\n", emailErr)
 	}
 
+	// Notify admin about new booking
+	if adminErr := sendAdminNotification(req.ClientName, req.ClientEmail, req.Date, req.TimeSlot, service); adminErr != nil {
+		fmt.Fprintf(os.Stderr, "Admin notification error: %v\n", adminErr)
+	}
+
 	writeJSON(w, http.StatusCreated, bookingsResponse{
 		Data:    map[string]string{"id": id, "created_at": createdAt.Format(time.RFC3339)},
 		Message: "Booking created successfully",
@@ -520,4 +525,75 @@ func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
+}
+
+// sendAdminNotification sends a notification email to admin about a new booking.
+func sendAdminNotification(clientName, clientEmail, date, timeSlot, service string) error {
+	apiKey := os.Getenv("RESEND_API_KEY")
+	emailFrom := os.Getenv("EMAIL_FROM")
+	adminEmail := os.Getenv("ADMIN_EMAIL")
+
+	if apiKey == "" || emailFrom == "" || adminEmail == "" {
+		return fmt.Errorf("admin notification not configured")
+	}
+
+	subject := fmt.Sprintf("Nowa rezerwacja: %s - %s %s", clientName, date, timeSlot)
+	htmlBody := fmt.Sprintf(`
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h2 style="color: #2d5f5d;">Nowa rezerwacja</h2>
+  <table style="width: 100%%; border-collapse: collapse; margin: 20px 0;">
+    <tr style="background: #f8f9fa;">
+      <td style="padding: 12px; font-weight: bold; border: 1px solid #dee2e6;">Klient</td>
+      <td style="padding: 12px; border: 1px solid #dee2e6;">%s</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px; font-weight: bold; border: 1px solid #dee2e6;">Email</td>
+      <td style="padding: 12px; border: 1px solid #dee2e6;">%s</td>
+    </tr>
+    <tr style="background: #f8f9fa;">
+      <td style="padding: 12px; font-weight: bold; border: 1px solid #dee2e6;">Data</td>
+      <td style="padding: 12px; border: 1px solid #dee2e6;">%s</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px; font-weight: bold; border: 1px solid #dee2e6;">Godzina</td>
+      <td style="padding: 12px; border: 1px solid #dee2e6;">%s</td>
+    </tr>
+    <tr style="background: #f8f9fa;">
+      <td style="padding: 12px; font-weight: bold; border: 1px solid #dee2e6;">Usluga</td>
+      <td style="padding: 12px; border: 1px solid #dee2e6;">%s</td>
+    </tr>
+  </table>
+  <p style="color: #6c757d; font-size: 14px;"><a href="https://swioklodominika.pl/#/admin">Przejdz do panelu admina</a></p>
+</div>`, clientName, clientEmail, date, timeSlot, service)
+
+	payload := map[string]interface{}{
+		"from":    emailFrom,
+		"to":      []string{adminEmail},
+		"subject": subject,
+		"html":    htmlBody,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal: %w", err)
+	}
+
+	emailReq, err := http.NewRequest("POST", "https://api.resend.com/emails", bytes.NewReader(body))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+	emailReq.Header.Set("Authorization", "Bearer "+apiKey)
+	emailReq.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(emailReq)
+	if err != nil {
+		return fmt.Errorf("failed to send: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("resend error (status %d): %s", resp.StatusCode, string(respBody))
+	}
+	return nil
 }
