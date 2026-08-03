@@ -8,6 +8,7 @@ export default function Prices() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [bookingService, setBookingService] = useState('');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -15,8 +16,9 @@ export default function Prices() {
     });
   }, []);
 
-  const handleBookClick = () => {
+  const handleBookClick = (serviceName) => {
     if (isLoggedIn) {
+      setBookingService(serviceName);
       setIsModalOpen(true);
     } else {
       setShowLoginPrompt(true);
@@ -90,7 +92,7 @@ export default function Prices() {
                   <li key={idx}>{feature}</li>
                 ))}
               </ul>
-              <button className="book-button" onClick={handleBookClick}>Umów Wizytę</button>
+              <button className="book-button" onClick={() => handleBookClick(service.title)}>Umów Wizytę</button>
             </div>
           ))}
         </div>
@@ -100,7 +102,7 @@ export default function Prices() {
           <p>Akceptujemy większość głównych planów ubezpieczeniowych. Skontaktuj się z nami, aby zweryfikować swoje ubezpieczenie. Dostępne opcje płatności prywatnej i ruchoma skala opłat na życzenie.</p>
         </div>
       </div>
-      <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} language="pl" />
+      <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} language="pl" preselectedService={bookingService} />
       {showLoginPrompt && (
         <div className="login-prompt-overlay" onClick={() => setShowLoginPrompt(false)}>
           <div className="login-prompt" onClick={(e) => e.stopPropagation()}>

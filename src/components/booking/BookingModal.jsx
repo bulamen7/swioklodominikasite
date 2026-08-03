@@ -13,10 +13,10 @@ const SERVICES = [
   'Terapia Integracji Sensorycznej',
 ];
 
-export default function BookingModal({ isOpen, onClose, language }) {
+export default function BookingModal({ isOpen, onClose, language, preselectedService }) {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
-  const [selectedService, setSelectedService] = useState('');
+  const [selectedService, setSelectedService] = useState(preselectedService || '');
   const [notes, setNotes] = useState('');
   const [bookedSlots, setBookedSlots] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -93,7 +93,7 @@ export default function BookingModal({ isOpen, onClose, language }) {
   const handleClose = () => {
     setSelectedDate('');
     setSelectedTime('');
-    setSelectedService('');
+    setSelectedService(preselectedService || '');
     setNotes('');
     setSuccess(false);
     setError('');
@@ -215,13 +215,20 @@ export default function BookingModal({ isOpen, onClose, language }) {
         )}
 
         {/* Service */}
-        {selectedTime && (
+        {selectedTime && !preselectedService && (
           <div className="booking-service">
             <h3>{isPL ? 'Wybierz usługę:' : 'Select service:'}</h3>
             <select value={selectedService} onChange={(e) => setSelectedService(e.target.value)}>
               <option value="">{isPL ? '-- Wybierz --' : '-- Select --'}</option>
               {SERVICES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
+          </div>
+        )}
+
+        {selectedTime && preselectedService && (
+          <div className="booking-service">
+            <h3>{isPL ? 'Usługa:' : 'Service:'}</h3>
+            <p className="preselected-service">{preselectedService}</p>
           </div>
         )}
 

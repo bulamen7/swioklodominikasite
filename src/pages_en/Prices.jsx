@@ -8,6 +8,7 @@ export default function Prices() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [bookingService, setBookingService] = useState('');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -15,8 +16,9 @@ export default function Prices() {
     });
   }, []);
 
-  const handleBookClick = () => {
+  const handleBookClick = (serviceName) => {
     if (isLoggedIn) {
+      setBookingService(serviceName);
       setIsModalOpen(true);
     } else {
       setShowLoginPrompt(true);
@@ -90,7 +92,7 @@ export default function Prices() {
                   <li key={idx}>{feature}</li>
                 ))}
               </ul>
-              <button className="book-button" onClick={handleBookClick}>Book Now</button>
+              <button className="book-button" onClick={() => handleBookClick(service.title)}>Book Now</button>
             </div>
           ))}
         </div>
@@ -100,7 +102,7 @@ export default function Prices() {
           <p>We accept most major insurance plans. Please contact us to verify your coverage. Self-pay options and sliding scale fees available upon request.</p>
         </div>
       </div>
-      <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} language="en" />
+      <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} language="en" preselectedService={bookingService} />
       {showLoginPrompt && (
         <div className="login-prompt-overlay" onClick={() => setShowLoginPrompt(false)}>
           <div className="login-prompt" onClick={(e) => e.stopPropagation()}>

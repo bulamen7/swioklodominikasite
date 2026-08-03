@@ -244,3 +244,12 @@
     padding: 1.5rem;
   }
 }
+
+.preselected-service {
+  background: rgba(45, 95, 93, 0.08);
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  color: var(--primary-color);
+  margin: 0;
+}
