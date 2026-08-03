@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
 import Login from './Login';
 import Register from './Register';
+import ForgotPassword from './ForgotPassword';
+import ResetPassword from './ResetPassword';
 import Dashboard from './Dashboard';
 import PatientDashboard from './PatientDashboard';
 
@@ -9,7 +11,8 @@ export default function AdminApp() {
   const [session, setSession] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showRegister, setShowRegister] = useState(false);
+  const [view, setView] = useState('login'); // login, register, forgot
+  const [isRecovery, setIsRecovery] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -18,8 +21,11 @@ export default function AdminApp() {
       else setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecovery(true);
+      }
       if (session) fetchRole(session.user.id);
       else {
         setRole(null);
@@ -45,11 +51,19 @@ export default function AdminApp() {
     return <div style={{ textAlign: 'center', padding: '4rem' }}>Ładowanie...</div>;
   }
 
+  // Show reset password form after clicking email link
+  if (isRecovery && session) {
+    return <ResetPassword />;
+  }
+
   if (!session) {
-    if (showRegister) {
-      return <Register onSwitch={() => setShowRegister(false)} />;
+    if (view === 'register') {
+      return <Register onSwitch={() => setView('login')} />;
     }
-    return <Login onLogin={() => {}} onSwitch={() => setShowRegister(true)} />;
+    if (view === 'forgot') {
+      return <ForgotPassword onSwitch={() => setView('login')} />;
+    }
+    return <Login onLogin={() => {}} onSwitch={() => setView('register')} onForgotPassword={() => setView('forgot')} />;
   }
 
   if (role === 'admin') {

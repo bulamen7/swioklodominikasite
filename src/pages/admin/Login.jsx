@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../../config/supabase';
 import './Admin.css';
 
-export default function Login({ onLogin, onSwitch }) {
+export default function Login({ onLogin, onSwitch, onForgotPassword }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -56,7 +56,10 @@ export default function Login({ onLogin, onSwitch }) {
           </button>
         </form>
         <p className="auth-switch">
-          <button onClick={onSwitch} className="link-btn">Zarejestruj się</button>
+          <button onClick={() => onForgotPassword()} className="link-btn">Nie pamiętam hasła</button>
+        </p>
+        <p className="auth-switch">
+          Nie masz konta? <button onClick={onSwitch} className="link-btn">Zarejestruj się</button>
         </p>
       </div>
     </div>
