@@ -1,26 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../config/supabase';
 import './Navbar.css';
 
 export default function Navbar() {
   const { language, toggleLanguage } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const text = {
     en: {
       home: 'Home',
       prices: 'Prices',
       about: 'About',
       contact: 'Contact',
-      appointment: 'Book Appointment'
+      appointment: 'Book Appointment',
+      login: 'Log in',
+      myAccount: 'My Account',
     },
     pl: {
       home: 'Strona Główna',
       prices: 'Cennik',
       about: 'O Mnie',
       contact: 'Kontakt',
-      appointment: 'Umów Wizytę'
+      appointment: 'Umów Wizytę',
+      login: 'Zaloguj się',
+      myAccount: 'Moje Konto',
     }
   };
 
@@ -61,7 +79,11 @@ export default function Navbar() {
              PL
             </button>
           </li>
-          <li><Link to="/admin" className="nav-login" onClick={closeMenu}>{language === 'pl' ? 'Zaloguj się' : 'Log in'}</Link></li>
+          <li>
+            <Link to="/admin" className="nav-login" onClick={closeMenu}>
+              {isLoggedIn ? text[language].myAccount : text[language].login}
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
