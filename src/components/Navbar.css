@@ -13,13 +13,43 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .nav-logo {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--primary-color);
+}
+
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 110;
+}
+
+.nav-hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--primary-color);
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.nav-hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .nav-menu {
@@ -59,7 +89,7 @@
 .lang-switcher button {
   background: none;
   border: none;
-  color: var(--white);
+  color: var(--text-dark);
   cursor: pointer;
   font-size: 0.9rem;
   padding: 0.25rem 0.5rem;
@@ -67,43 +97,42 @@
 }
 
 .lang-switcher button:hover {
-  color: var(--white);
+  color: var(--primary-color);
 }
 
 .lang-switcher button.active {
-  color: var(--white);
+  color: var(--primary-color);
   font-weight: 600;
 }
 
 .lang-switcher span {
-  color: var(--white);
+  color: var(--text-light);
 }
 
 @media (max-width: 768px) {
-  .nav-container {
-    padding: 1rem;
-    flex-direction: column;
-    gap: 1rem;
+  .nav-hamburger {
+    display: flex;
   }
-  
-  .nav-logo {
-    width: 100%;
-    text-align: center;
-  }
-  
+
   .nav-menu {
-    gap: 0.8rem;
-    font-size: 0.85rem;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    padding: 1.5rem 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    gap: 1.2rem;
+    align-items: center;
   }
-  
-  .nav-menu li:nth-child(5) {
-    flex-basis: 100%;
-    text-align: center;
+
+  .nav-menu--open {
+    display: flex;
   }
-  
-  .nav-cta {
-    display: inline-block;
+
+  .nav-menu a {
+    font-size: 1.1rem;
   }
 }
