@@ -346,6 +346,9 @@ func CreateCalendarEvent(clientName, service, date, timeSlot string) error {
 	if err != nil {
 		return fmt.Errorf("failed to parse date/time: %w", err)
 	}
+	// Set timezone to Warsaw (UTC+2 in summer, UTC+1 in winter)
+	loc, _ := time.LoadLocation("Europe/Warsaw")
+	startTime = time.Date(startTime.Year(), startTime.Month(), startTime.Day(), startTime.Hour(), startTime.Minute(), 0, 0, loc)
 	endTime := startTime.Add(50 * time.Minute)
 
 	summary := fmt.Sprintf("%s - %s", clientName, service)
