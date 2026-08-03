@@ -95,7 +95,7 @@ export default function PatientDashboard({ user, onLogout }) {
                     <span className={`status-pill status-${booking.status}`}>
                       {statusLabels[booking.status] || booking.status}
                     </span>
-                    {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                    {booking.status === 'pending' && (
                       <button className="cancel-btn" onClick={() => handleCancel(booking.id)}>
                         Anuluj
                       </button>
