@@ -27,6 +27,12 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
   const isPL = language === 'pl';
 
   useEffect(() => {
+    if (isOpen && preselectedService) {
+      setSelectedService(preselectedService);
+    }
+  }, [isOpen, preselectedService]);
+
+  useEffect(() => {
     if (selectedDate) {
       fetchBookedSlots(selectedDate);
     }
