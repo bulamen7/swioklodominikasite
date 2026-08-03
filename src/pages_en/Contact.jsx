@@ -87,7 +87,7 @@ export default function Contact() {
               <input type="email" name="email" placeholder="Your email address" required />
               <textarea name="message" rows="5" placeholder="Your message" required></textarea>
               <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Sending...' : 'Send Message'}
+                {isSubmitting ? <><span className="spinner"></span>Sending...</> : 'Send Message'}
               </button>
               {submitStatus && <p className={`submit-status ${submitStatus.type}`}>{submitStatus.message}</p>}
             </form>
