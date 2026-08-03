@@ -126,6 +126,11 @@ export default function Dashboard({ onLogout }) {
                         </select>
                       </td>
                       <td>
+                        {booking.status === 'completed' && (
+                          <a href={`/api/invoice?id=${booking.id}`} className="invoice-btn" target="_blank" rel="noopener noreferrer">
+                            Faktura
+                          </a>
+                        )}
                         <button className="delete-btn" onClick={() => handleDelete(booking.id)}>
                           Usuń
                         </button>
