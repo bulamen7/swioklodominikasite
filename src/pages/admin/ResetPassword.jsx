@@ -30,6 +30,7 @@ export default function ResetPassword() {
     if (error) {
       setError('Nie udało się zmienić hasła: ' + error.message);
     } else {
+      localStorage.removeItem('password_recovery');
       setSuccess(true);
     }
     setLoading(false);

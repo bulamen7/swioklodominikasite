@@ -16,8 +16,12 @@ export default function AdminApp() {
 
   useEffect(() => {
     // Check if URL contains recovery token (from password reset email)
-    const hash = window.location.hash;
-    if (hash.includes('type=recovery') || hash.includes('type=magiclink')) {
+    const fullHash = window.location.href;
+    if (fullHash.includes('type=recovery')) {
+      localStorage.setItem('password_recovery', 'true');
+      setIsRecovery(true);
+    }
+    if (localStorage.getItem('password_recovery') === 'true') {
       setIsRecovery(true);
     }
 
@@ -29,6 +33,7 @@ export default function AdminApp() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
+        localStorage.setItem('password_recovery', 'true');
         setIsRecovery(true);
         setSession(session);
         setLoading(false);
