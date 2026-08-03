@@ -31,11 +31,12 @@ export default function AdminApp() {
   }, []);
 
   const fetchRole = async (userId) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userId)
       .single();
+    console.log('fetchRole result:', { data, error, userId });
     setRole(data?.role || 'patient');
     setLoading(false);
   };
