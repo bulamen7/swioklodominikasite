@@ -6,79 +6,57 @@ A modern, responsive therapy practice website with multi-language support (Polis
 
 ## Tech Stack
 
-**Frontend:**
-- React 19
-- Vite 7
-- React Router 7
-- i18n (Polish / English)
-
-**Backend:**
-- Go (net/http, net/smtp)
-- Contact form email via SMTP (Gmail)
-
-**Deployment:**
-- GitHub Pages (frontend)
-- Custom domain: swioklodominika.pl
+- **Frontend:** React 19, Vite 7, React Router 7
+- **Backend:** Vercel Serverless Functions (Node.js)
+- **Email:** Resend API
+- **Hosting:** Vercel
+- **Languages:** Polish / English (auto-detected)
 
 ## Project Structure
 
 ```
-├── src/                    # React frontend
+├── api/                    # Vercel Serverless Functions
+│   └── contact.js          # POST /api/contact — email via Resend
+├── src/
 │   ├── components/         # Shared components (Navbar, CalendarModal)
-│   ├── pages/              # Default pages
 │   ├── pages_pl/           # Polish language pages
 │   ├── pages_en/           # English language pages
-│   ├── config/             # Calendar & forms config
+│   ├── config/             # Calendar config
 │   └── context/            # Language context
-├── backend-go/             # Go backend (API server)
-│   ├── cmd/server/         # Entrypoint
-│   └── internal/           # Config, handlers, mailer, middleware
 ├── public/                 # Static assets & locale files
-└── .github/workflows/      # CI/CD (GitHub Pages deploy)
+├── vercel.json             # Vercel routing config
+└── vite.config.js          # Vite configuration
 ```
 
 ## Local Development
 
-### Prerequisites
-
-- Node.js v18+
-- Go 1.21+
-
-### Setup
-
 ```bash
-# Install frontend dependencies
 npm install
-
-# Start both frontend and backend
 npm run dev
 ```
 
-Frontend: `http://localhost:5173/dominikaswioklo/`
-Backend: `http://localhost:3001`
+Frontend: `http://localhost:5173/`
 
-### Available Scripts
+> Note: The contact form uses `/api/contact` which works on Vercel. Locally it won't send emails unless you run `vercel dev`.
 
-| Command            | Description                          |
-|--------------------|--------------------------------------|
-| `npm run dev`      | Start frontend + Go backend together |
-| `npm run build`    | Production build (frontend)          |
-| `npm run preview`  | Preview production build locally     |
-| `npm run lint`     | Run ESLint                           |
-| `npm run backend`  | Start Go backend only                |
+## Available Scripts
 
-### Backend (Go)
-
-```bash
-cd backend-go
-cp .env.example .env   # Fill in SMTP credentials
-go run ./cmd/server
-```
+| Command           | Description                     |
+|-------------------|---------------------------------|
+| `npm run dev`     | Start Vite dev server           |
+| `npm run build`   | Production build                |
+| `npm run preview` | Preview production build        |
+| `npm run lint`    | Run ESLint                      |
 
 ## Deployment
 
-Frontend auto-deploys to GitHub Pages on push to `main`.
+Automatic deploy to Vercel on every push to `main`.
 
-## License
+Environment variables (set in Vercel dashboard):
+- `RESEND_API_KEY` — Resend API key
+- `EMAIL_FROM` — Sender email (verified domain)
+- `EMAIL_TO` — Recipient email
 
-Private project.
+## Custom Domain
+
+`swioklodominika.pl` → Vercel (DNS managed via OVH/Cloudflare)
