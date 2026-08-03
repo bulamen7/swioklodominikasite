@@ -1,6 +1,7 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import HomeEN from './pages_en/Home';
 import PricesEN from './pages_en/Prices';
 import AboutEN from './pages_en/About';
@@ -43,6 +44,7 @@ function AppContent() {
         <Route path="/appointment" element={<Appointment />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Footer />
     </>
   );
 }

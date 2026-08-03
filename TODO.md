@@ -25,10 +25,10 @@
 
 ### Faza 1 — Poprawa UX i stabilnosci
 - [x] Dodac loading state na formularz kontaktowy (spinner/animacja)
-- [ ] Dodac walidacje email po stronie frontendu (regex)
-- [ ] Dodac meta tagi SEO (title, description, og:image)
+- [x] Dodac walidacje email po stronie frontendu (regex)
+- [x] Dodac meta tagi SEO (title, description, og:image)
 - [ ] Dodac favicon
-- [ ] Poprawic mobile navigation (hamburger menu)
+- [x] Poprawic mobile navigation (hamburger menu)
 - [ ] Dodac footer z linkami i informacjami
 
 ### Faza 2 — Funkcjonalnosc
