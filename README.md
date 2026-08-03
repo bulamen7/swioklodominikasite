@@ -7,7 +7,7 @@ A modern, responsive therapy practice website with multi-language support (Polis
 ## Tech Stack
 
 - **Frontend:** React 19, Vite 7, React Router 7
-- **Backend:** Vercel Serverless Functions (Node.js)
+- **Backend:** Vercel Serverless Functions (Go)
 - **Email:** Resend API
 - **Hosting:** Vercel
 - **Languages:** Polish / English (auto-detected)
@@ -15,8 +15,9 @@ A modern, responsive therapy practice website with multi-language support (Polis
 ## Project Structure
 
 ```
-├── api/                    # Vercel Serverless Functions
-│   └── contact.js          # POST /api/contact — email via Resend
+├── api/                    # Vercel Serverless Functions (Go)
+│   ├── contact.go          # POST /api/contact — email via Resend
+│   └── go.mod              # Go module for serverless functions
 ├── src/
 │   ├── components/         # Shared components (Navbar, CalendarModal)
 │   ├── pages_pl/           # Polish language pages
