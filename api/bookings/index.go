@@ -61,7 +61,14 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	conn, err := pgx.Connect(ctx, dbURL)
+	config, err := pgx.ParseConfig(dbURL)
+	if err != nil {
+		writeBookingsJSON(w, http.StatusInternalServerError, bookingsResponse{Error: "Invalid database URL"})
+		return
+	}
+	config.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+
+	conn, err := pgx.ConnectConfig(ctx, config)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "DB connection error: %v\n", err)
 		writeBookingsJSON(w, http.StatusInternalServerError, bookingsResponse{Error: "Database connection failed: " + err.Error()})
