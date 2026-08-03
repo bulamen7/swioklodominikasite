@@ -233,7 +233,7 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
         )}
 
         {/* Notes */}
-        {selectedService && (
+        {selectedTime && selectedService && (
           <div className="booking-notes">
             <h3>{isPL ? 'Notatka (opcjonalnie):' : 'Notes (optional):'}</h3>
             <textarea
@@ -247,7 +247,7 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
 
         {error && <p className="booking-error">{error}</p>}
 
-        {selectedService && (
+        {selectedTime && selectedService && (
           <button className="booking-btn" onClick={handleSubmit} disabled={loading}>
             {loading
               ? (isPL ? 'Rezerwacja...' : 'Booking...')
