@@ -61,6 +61,7 @@ export default function Navbar() {
              PL
             </button>
           </li>
+          <li><Link to="/admin" className="nav-login" onClick={closeMenu}>{language === 'pl' ? 'Zaloguj się' : 'Log in'}</Link></li>
         </ul>
       </div>
     </nav>

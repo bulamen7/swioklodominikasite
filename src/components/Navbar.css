@@ -109,6 +109,20 @@
   color: var(--text-light);
 }
 
+.nav-login {
+  border: 1px solid var(--primary-color);
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  color: var(--primary-color) !important;
+  font-size: 0.85rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+.nav-login:hover {
+  background: var(--primary-color);
+  color: var(--white) !important;
+}
+
 @media (max-width: 768px) {
   .nav-hamburger {
     display: flex;

@@ -63,7 +63,6 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <p>&copy; {new Date().getFullYear()} Dominika Świokło. {t.rights}</p>
-        <Link to="/admin" className="admin-link">Admin</Link>
       </div>
     </footer>
   );
