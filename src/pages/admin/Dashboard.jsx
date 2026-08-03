@@ -6,6 +6,10 @@ export default function Dashboard({ onLogout }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('bookings');
+  const [invoiceMonth, setInvoiceMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
 
   useEffect(() => {
     fetchBookings();
@@ -63,6 +67,23 @@ export default function Dashboard({ onLogout }) {
           Rezerwacje ({bookings.length})
         </button>
       </nav>
+
+      <div className="admin-invoice-bar">
+        <label>Faktura zbiorcza za miesiąc: </label>
+        <input
+          type="month"
+          value={invoiceMonth}
+          onChange={(e) => setInvoiceMonth(e.target.value)}
+        />
+        <a
+          href={`/api/invoice?month=${invoiceMonth}`}
+          className="invoice-monthly-btn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Pobierz PDF
+        </a>
+      </div>
 
       <main className="admin-content">
         {activeTab === 'bookings' && (

@@ -100,6 +100,11 @@ export default function PatientDashboard({ user, onLogout }) {
                         Anuluj
                       </button>
                     )}
+                    {booking.status === 'completed' && (
+                      <a href={`/api/invoice?id=${booking.id}`} className="invoice-btn" target="_blank" rel="noopener noreferrer">
+                        Faktura
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
