@@ -42,7 +42,7 @@ type bookingsResponse struct {
 	Message string      `json:"message,omitempty"`
 }
 
-func BookingsHandler(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -109,7 +109,8 @@ func handleGetBookings(ctx context.Context, conn *pgx.Conn, w http.ResponseWrite
 	rows, err := conn.Query(ctx,
 		"SELECT id, client_name, client_email, phone, service, date, time_slot, notes, status, created_at FROM bookings ORDER BY date ASC, time_slot ASC")
 	if err != nil {
-		writeBookingsJSON(w, http.StatusInternalServerError, bookingsResponse{Error: "Failed to fetch bookings"})
+		fmt.Fprintf(os.Stderr, "Query error: %v\n", err)
+		writeBookingsJSON(w, http.StatusInternalServerError, bookingsResponse{Error: "Failed to fetch bookings: " + err.Error()})
 		return
 	}
 	defer rows.Close()
