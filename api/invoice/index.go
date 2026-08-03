@@ -203,3 +203,39 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to generate PDF", http.StatusInternalServerError)
 	}
 }
+
+func getOrCreateInvoiceNumber(ctx context.Context, conn *pgx.Conn, bookingID string, bookingDate time.Time) string {
+	// Check if invoice already exists for this booking
+	var existingNumber string
+	err := conn.QueryRow(ctx,
+		"SELECT invoice_number FROM invoices WHERE booking_id = $1", bookingID,
+	).Scan(&existingNumber)
+	if err == nil {
+		return existingNumber
+	}
+
+	// Generate next invoice number for this month
+	month := bookingDate.Format("01")
+	year := bookingDate.Format("2006")
+	pattern := fmt.Sprintf("FV/%%/%s/%s", month, year)
+
+	var maxNum int
+	err = conn.QueryRow(ctx,
+		"SELECT COALESCE(MAX(CAST(SPLIT_PART(invoice_number, '/', 2) AS INTEGER)), 0) FROM invoices WHERE invoice_number LIKE $1",
+		pattern,
+	).Scan(&maxNum)
+	if err != nil {
+		maxNum = 0
+	}
+
+	nextNum := maxNum + 1
+	invoiceNumber := fmt.Sprintf("FV/%d/%s/%s", nextNum, month, year)
+
+	// Save to database
+	_, _ = conn.Exec(ctx,
+		"INSERT INTO invoices (booking_id, invoice_number) VALUES ($1, $2) ON CONFLICT (booking_id) DO NOTHING",
+		bookingID, invoiceNumber,
+	)
+
+	return invoiceNumber
+}
