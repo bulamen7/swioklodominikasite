@@ -89,6 +89,12 @@ export default function Contact() {
               <button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? <><span className="spinner"></span>Sending...</> : 'Send Message'}
               </button>
+              {isSubmitting && (
+                <div className="form-loading">
+                  <div className="form-loading-spinner"></div>
+                  <p>Sending message...</p>
+                </div>
+              )}
               {submitStatus && <p className={`submit-status ${submitStatus.type}`}>{submitStatus.message}</p>}
             </form>
           </div>
