@@ -29,7 +29,7 @@
 - [x] Dodac meta tagi SEO (title, description, og:image)
 - [ ] Dodac favicon
 - [x] Poprawic mobile navigation (hamburger menu)
-- [ ] Dodac footer z linkami i informacjami
+- [x] Dodac footer z linkami i informacjami
 
 ### Faza 2 — Funkcjonalnosc
 - [ ] Panel administracyjny (login + dashboard)
