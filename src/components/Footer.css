@@ -44,3 +44,16 @@
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
 }
+
+.admin-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.admin-link:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
