@@ -154,9 +154,24 @@ func handleCreateBooking(ctx context.Context, conn *pgx.Conn, w http.ResponseWri
 		return
 	}
 
+	// Check if time slot is already taken (exclude cancelled bookings)
+	var existingCount int
+	err := conn.QueryRow(ctx,
+		"SELECT COUNT(*) FROM bookings WHERE date = $1 AND time_slot = $2 AND status != 'cancelled'",
+		req.Date, req.TimeSlot,
+	).Scan(&existingCount)
+	if err != nil {
+		writeBookingsJSON(w, http.StatusInternalServerError, bookingsResponse{Error: "Failed to check availability"})
+		return
+	}
+	if existingCount > 0 {
+		writeBookingsJSON(w, http.StatusConflict, bookingsResponse{Error: "This time slot is already booked"})
+		return
+	}
+
 	var id string
 	var createdAt time.Time
-	err := conn.QueryRow(ctx,
+	err = conn.QueryRow(ctx,
 		`INSERT INTO bookings (client_name, client_email, phone, service, date, time_slot, notes)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7)
 		 RETURNING id, created_at`,
