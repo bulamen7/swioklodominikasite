@@ -17,6 +17,13 @@ export default function Contact() {
       message: formData.get('message'),
     };
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      setSubmitStatus({ type: 'error', message: 'Podaj poprawny adres e-mail.' });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
