@@ -194,6 +194,15 @@ func handleCreateBooking(ctx context.Context, conn *pgx.Conn, w http.ResponseWri
 		return
 	}
 
+	// Sync to Google Calendar (non-blocking — don't fail booking if calendar sync fails)
+	service := "Wizyta"
+	if req.Service != nil && *req.Service != "" {
+		service = *req.Service
+	}
+	if calErr := CreateCalendarEvent(req.ClientName, service, req.Date, req.TimeSlot); calErr != nil {
+		fmt.Fprintf(os.Stderr, "Google Calendar sync error: %v\n", calErr)
+	}
+
 	writeBookingsJSON(w, http.StatusCreated, bookingsResponse{
 		Data:    map[string]string{"id": id, "created_at": createdAt.Format(time.RFC3339)},
 		Message: "Booking created successfully",
