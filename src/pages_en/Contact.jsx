@@ -98,6 +98,7 @@ export default function Contact() {
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2445.290941238473!2d21.01928187685396!3d52.201760159742214!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471eccdf9e71a545%3A0x2c364418ccd51224!2sGabinet%20Promyk%20-%20Psycholog%2C%20logopeda%2C%20fizjoterapeuta%20dzieci%C4%99cy!5e0!3m2!1spl!2spl!4v1758408434037!5m2!1spl!2spl" 
               className="map-iframe" 
               allowFullScreen 
+              loading="lazy"
               title="Map to Promyk Clinic"
             ></iframe>
           </div>

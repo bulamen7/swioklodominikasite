@@ -1,22 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CookieBanner from './components/CookieBanner';
-import AdminApp from './pages/admin/AdminApp';
 import ResetPassword from './pages/admin/ResetPassword';
 import { supabase } from './config/supabase';
-import HomeEN from './pages_en/Home';
-import PricesEN from './pages_en/Prices';
-import AboutEN from './pages_en/About';
-import ContactEN from './pages_en/Contact';
-import AppointmentEN from './pages_en/Appointment';
-import HomePL from './pages_pl/Home';
-import PricesPL from './pages_pl/Prices';
-import AboutPL from './pages_pl/About';
-import ContactPL from './pages_pl/Contact';
-import AppointmentPL from './pages_pl/Appointment';
+
+// Lazy load pages — only downloaded when user navigates to them
+const HomeEN = lazy(() => import('./pages_en/Home'));
+const PricesEN = lazy(() => import('./pages_en/Prices'));
+const AboutEN = lazy(() => import('./pages_en/About'));
+const ContactEN = lazy(() => import('./pages_en/Contact'));
+const AppointmentEN = lazy(() => import('./pages_en/Appointment'));
+const HomePL = lazy(() => import('./pages_pl/Home'));
+const PricesPL = lazy(() => import('./pages_pl/Prices'));
+const AboutPL = lazy(() => import('./pages_pl/About'));
+const ContactPL = lazy(() => import('./pages_pl/Contact'));
+const AppointmentPL = lazy(() => import('./pages_pl/Appointment'));
+const AdminApp = lazy(() => import('./pages/admin/AdminApp'));
 
 function NotFound() {
   const { language } = useLanguage();
@@ -27,6 +29,10 @@ function NotFound() {
       <a href="/">{language === 'pl' ? 'Wróć na stronę główną' : 'Go back home'}</a>
     </div>
   );
+}
+
+function PageLoader() {
+  return <div style={{ textAlign: 'center', padding: '4rem' }}></div>;
 }
 
 function AppContent() {
@@ -41,15 +47,17 @@ function AppContent() {
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/prices" element={<Prices />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/appointment" element={<Appointment />} />
-        <Route path="/admin" element={<AdminApp />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/prices" element={<Prices />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/appointment" element={<Appointment />} />
+          <Route path="/admin" element={<AdminApp />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
       <Footer />
       <CookieBanner />
     </>
@@ -61,7 +69,6 @@ export default function App() {
   const [recoveryReady, setRecoveryReady] = useState(false);
 
   useEffect(() => {
-    // Detect recovery token in URL
     const fullUrl = window.location.href;
     if (fullUrl.includes('type=recovery')) {
       setIsRecovery(true);
@@ -74,7 +81,6 @@ export default function App() {
       }
     });
 
-    // Give Supabase a moment to process the token
     if (fullUrl.includes('type=recovery')) {
       setTimeout(() => setRecoveryReady(true), 1500);
     }
