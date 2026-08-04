@@ -98,6 +98,7 @@ export default function PatientDashboard({ user, onLogout }) {
   const [reviewContent, setReviewContent] = useState('');
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewMsg, setReviewMsg] = useState('');
+  const [reviewBookingId, setReviewBookingId] = useState(null);
 
   useEffect(() => {
     fetchProfile();
@@ -215,7 +216,6 @@ export default function PatientDashboard({ user, onLogout }) {
           <span className="user-email">{profile?.full_name || user.email}</span>
           <button className="change-password-btn" onClick={() => setShowProfile(true)}>{t.profile}</button>
           <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>{t.changePassword}</button>
-          <button className="change-password-btn" onClick={() => setShowReview(true)}>{t.addReview}</button>
           <button className="logout-btn" onClick={handleLogout}>{t.logout}</button>
         </div>
       </header>
@@ -251,6 +251,11 @@ export default function PatientDashboard({ user, onLogout }) {
                       <a href={`/api/invoice?id=${booking.id}`} className="invoice-btn" target="_blank" rel="noopener noreferrer">
                         {t.invoice}
                       </a>
+                    )}
+                    {booking.status === 'completed' && (
+                      <button className="mark-read-btn" onClick={() => { setReviewBookingId(booking.id); setShowReview(true); }}>
+                        {t.addReview}
+                      </button>
                     )}
                   </div>
                 </div>
