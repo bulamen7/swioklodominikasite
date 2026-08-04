@@ -11,12 +11,13 @@ import (
 )
 
 type Review struct {
-	ID         string `json:"id"`
-	ClientName string `json:"client_name"`
-	Rating     int    `json:"rating"`
-	Content    string `json:"content"`
-	IsApproved bool   `json:"is_approved"`
-	CreatedAt  string `json:"created_at"`
+	ID         string  `json:"id"`
+	ClientName string  `json:"client_name"`
+	Rating     int     `json:"rating"`
+	Content    string  `json:"content"`
+	IsApproved bool    `json:"is_approved"`
+	BookingID  *string `json:"booking_id,omitempty"`
+	CreatedAt  string  `json:"created_at"`
 }
 
 type reviewRequest struct {
@@ -24,6 +25,7 @@ type reviewRequest struct {
 	Rating     int    `json:"rating"`
 	Content    string `json:"content"`
 	UserID     string `json:"user_id,omitempty"`
+	BookingID  string `json:"booking_id,omitempty"`
 }
 
 type reviewsResponse struct {
@@ -91,9 +93,9 @@ func handleGetReviews(ctx context.Context, conn *pgx.Conn, w http.ResponseWriter
 
 	var query string
 	if showAll {
-		query = "SELECT id, client_name, rating, content, is_approved, created_at FROM reviews ORDER BY created_at DESC"
+		query = "SELECT id, client_name, rating, content, is_approved, booking_id, created_at FROM reviews ORDER BY created_at DESC"
 	} else {
-		query = "SELECT id, client_name, rating, content, is_approved, created_at FROM reviews WHERE is_approved = true ORDER BY created_at DESC"
+		query = "SELECT id, client_name, rating, content, is_approved, booking_id, created_at FROM reviews WHERE is_approved = true ORDER BY created_at DESC"
 	}
 
 	rows, err := conn.Query(ctx, query)
@@ -107,7 +109,7 @@ func handleGetReviews(ctx context.Context, conn *pgx.Conn, w http.ResponseWriter
 	for rows.Next() {
 		var r Review
 		var createdAt time.Time
-		if err := rows.Scan(&r.ID, &r.ClientName, &r.Rating, &r.Content, &r.IsApproved, &createdAt); err != nil {
+		if err := rows.Scan(&r.ID, &r.ClientName, &r.Rating, &r.Content, &r.IsApproved, &r.BookingID, &createdAt); err != nil {
 			continue
 		}
 		r.CreatedAt = createdAt.Format(time.RFC3339)
@@ -138,9 +140,23 @@ func handleCreateReview(ctx context.Context, conn *pgx.Conn, w http.ResponseWrit
 		userID = nil
 	}
 
+	var bookingID interface{}
+	if req.BookingID != "" {
+		// Check if review already exists for this booking
+		var count int
+		conn.QueryRow(ctx, "SELECT COUNT(*) FROM reviews WHERE booking_id = $1", req.BookingID).Scan(&count)
+		if count > 0 {
+			writeJSON(w, http.StatusConflict, reviewsResponse{Error: "Review already submitted for this booking"})
+			return
+		}
+		bookingID = req.BookingID
+	} else {
+		bookingID = nil
+	}
+
 	_, err := conn.Exec(ctx,
-		"INSERT INTO reviews (user_id, client_name, rating, content) VALUES ($1, $2, $3, $4)",
-		userID, req.ClientName, req.Rating, req.Content)
+		"INSERT INTO reviews (user_id, booking_id, client_name, rating, content) VALUES ($1, $2, $3, $4, $5)",
+		userID, bookingID, req.ClientName, req.Rating, req.Content)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, reviewsResponse{Error: "Failed to create review"})
 		return

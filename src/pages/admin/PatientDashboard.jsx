@@ -99,10 +99,12 @@ export default function PatientDashboard({ user, onLogout }) {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewMsg, setReviewMsg] = useState('');
   const [reviewBookingId, setReviewBookingId] = useState(null);
+  const [reviewedBookings, setReviewedBookings] = useState([]);
 
   useEffect(() => {
     fetchProfile();
     fetchMyBookings();
+    fetchMyReviews();
   }, []);
 
   const fetchProfile = async () => {
@@ -128,6 +130,19 @@ export default function PatientDashboard({ user, onLogout }) {
       console.error('Failed to fetch bookings:', err);
     }
     setLoading(false);
+  };
+
+  const fetchMyReviews = async () => {
+    try {
+      const response = await fetch('/api/reviews?all=true');
+      const data = await response.json();
+      const myReviewBookingIds = (data.data || [])
+        .filter(r => r.booking_id)
+        .map(r => r.booking_id);
+      setReviewedBookings(myReviewBookingIds);
+    } catch (err) {
+      console.error('Failed to fetch reviews:', err);
+    }
   };
 
   const handleLogout = async () => {
@@ -197,6 +212,7 @@ export default function PatientDashboard({ user, onLogout }) {
       body: JSON.stringify({
         client_name: profile?.full_name || user.email,
         user_id: user.id,
+        booking_id: reviewBookingId,
         rating: reviewRating,
         content: reviewContent,
       }),
@@ -205,6 +221,10 @@ export default function PatientDashboard({ user, onLogout }) {
       setReviewMsg(t.reviewSent);
       setReviewContent('');
       setReviewRating(5);
+      setReviewedBookings([...reviewedBookings, reviewBookingId]);
+    } else {
+      const data = await response.json();
+      setReviewMsg(data.error || 'Error');
     }
   };
 
@@ -252,7 +272,7 @@ export default function PatientDashboard({ user, onLogout }) {
                         {t.invoice}
                       </a>
                     )}
-                    {booking.status === 'completed' && (
+                    {booking.status === 'completed' && !reviewedBookings.includes(booking.id) && (
                       <button className="mark-read-btn" onClick={() => { setReviewBookingId(booking.id); setShowReview(true); }}>
                         {t.addReview}
                       </button>
