@@ -26,6 +26,28 @@
 
     <link rel="canonical" href="https://swioklodominika.pl" />
     <link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
+
+    <!-- Google Analytics - loads only after cookie consent -->
+    <script>
+      window.gaLoaded = false;
+      function loadGA() {
+        if (window.gaLoaded) return;
+        window.gaLoaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-ECBNXXMXKB';
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-ECBNXXMXKB');
+      }
+      // Auto-load if consent was given previously
+      if (localStorage.getItem('cookie_consent') === 'accepted') {
+        loadGA();
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

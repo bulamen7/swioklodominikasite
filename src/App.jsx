@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import CookieBanner from './components/CookieBanner';
 import AdminApp from './pages/admin/AdminApp';
 import ResetPassword from './pages/admin/ResetPassword';
 import { supabase } from './config/supabase';
@@ -50,6 +51,7 @@ function AppContent() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
+      <CookieBanner />
     </>
   );
 }
