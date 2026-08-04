@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -9,6 +10,9 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"time"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type contactRequest struct {
@@ -129,53 +133,32 @@ func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 }
 
 func saveMessage(name, email, message string) error {
-	supabaseURL := os.Getenv("SUPABASE_URL")
-	supabaseKey := os.Getenv("SUPABASE_SERVICE_KEY")
 	dbURL := os.Getenv("DATABASE_URL")
-
-	// Try Supabase REST API first
-	if supabaseURL != "" && supabaseKey != "" {
-		payload := map[string]string{
-			"name":    name,
-			"email":   email,
-			"message": message,
-		}
-
-		body, err := json.Marshal(payload)
-		if err != nil {
-			return err
-		}
-
-		req, err := http.NewRequest("POST", supabaseURL+"/rest/v1/messages", bytes.NewReader(body))
-		if err != nil {
-			return err
-		}
-
-		req.Header.Set("apikey", supabaseKey)
-		req.Header.Set("Authorization", "Bearer "+supabaseKey)
-		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Prefer", "return=minimal")
-
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode >= 400 {
-			respBody, _ := io.ReadAll(resp.Body)
-			return fmt.Errorf("supabase error (status %d): %s", resp.StatusCode, string(respBody))
-		}
-
-		return nil
+	if dbURL == "" {
+		return fmt.Errorf("DATABASE_URL not configured")
 	}
 
-	// Fallback: direct database connection
-	if dbURL != "" {
-		// Simple HTTP call to our own messages endpoint won't work (circular),
-		// so we just log and skip
-		return fmt.Errorf("SUPABASE_URL and SUPABASE_SERVICE_KEY not set, DATABASE_URL available but not used in contact.go")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	config, err := pgx.ParseConfig(dbURL)
+	if err != nil {
+		return fmt.Errorf("invalid DATABASE_URL: %w", err)
+	}
+	config.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+
+	conn, err := pgx.ConnectConfig(ctx, config)
+	if err != nil {
+		return fmt.Errorf("db connection failed: %w", err)
+	}
+	defer conn.Close(ctx)
+
+	_, err = conn.Exec(ctx,
+		"INSERT INTO messages (name, email, message) VALUES ($1, $2, $3)",
+		name, email, message)
+	if err != nil {
+		return fmt.Errorf("insert failed: %w", err)
 	}
 
-	return fmt.Errorf("supabase not configured (SUPABASE_URL=%q, SUPABASE_SERVICE_KEY length=%d)", supabaseURL, len(supabaseKey))
+	return nil
 }
