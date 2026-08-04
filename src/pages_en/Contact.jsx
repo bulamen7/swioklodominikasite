@@ -1,9 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../config/supabase';
 import './Contact.css';
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setUser(session.user);
+        supabase.from('profiles').select('full_name').eq('id', session.user.id).single()
+          .then(({ data }) => setProfile(data));
+      }
+    });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,16 +25,18 @@ export default function Contact() {
 
     const formData = new FormData(e.target);
     const data = {
-      name: formData.get('name'),
-      email: formData.get('email'),
+      name: user ? (profile?.full_name || user.email) : formData.get('name'),
+      email: user ? user.email : formData.get('email'),
       message: formData.get('message'),
     };
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(data.email)) {
-      setSubmitStatus({ type: 'error', message: 'Please enter a valid email address.' });
-      setIsSubmitting(false);
-      return;
+    if (!user) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.email)) {
+        setSubmitStatus({ type: 'error', message: 'Please enter a valid email address.' });
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     try {
@@ -89,9 +104,10 @@ export default function Contact() {
 
           <div className="contact-form-section">
             <h2>Send a Message</h2>
+            {user && <p className="logged-in-info">Sending as: <strong>{profile?.full_name || user.email}</strong></p>}
             <form onSubmit={handleSubmit}>
-              <input type="text" name="name" placeholder="Your name" required />
-              <input type="email" name="email" placeholder="Your email address" required />
+              {!user && <input type="text" name="name" placeholder="Your name" required />}
+              {!user && <input type="email" name="email" placeholder="Your email address" required />}
               <textarea name="message" rows="5" placeholder="Your message" required></textarea>
               <button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? <><span className="spinner"></span>Sending...</> : 'Send Message'}
