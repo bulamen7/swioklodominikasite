@@ -27,6 +27,12 @@ export default function Dashboard({ onLogout }) {
     invoice: 'Faktura',
     delete: 'Usuń',
     confirmDelete: 'Czy na pewno chcesz usunąć tę rezerwację?',
+    messages: 'Wiadomości',
+    noMessages: 'Brak wiadomości',
+    from: 'Od',
+    markRead: 'Oznacz jako przeczytane',
+    deleteMsg: 'Usuń',
+    confirmDeleteMsg: 'Czy na pewno chcesz usunąć tę wiadomość?',
   } : {
     title: 'Admin Panel',
     logout: 'Log out',
@@ -49,9 +55,16 @@ export default function Dashboard({ onLogout }) {
     invoice: 'Invoice',
     delete: 'Delete',
     confirmDelete: 'Are you sure you want to delete this booking?',
+    messages: 'Messages',
+    noMessages: 'No messages',
+    from: 'From',
+    markRead: 'Mark as read',
+    deleteMsg: 'Delete',
+    confirmDeleteMsg: 'Are you sure you want to delete this message?',
   };
 
   const [bookings, setBookings] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('bookings');
   const [invoiceMonth, setInvoiceMonth] = useState(() => {
@@ -61,6 +74,7 @@ export default function Dashboard({ onLogout }) {
 
   useEffect(() => {
     fetchBookings();
+    fetchMessages();
   }, []);
 
   const fetchBookings = async () => {
@@ -81,6 +95,29 @@ export default function Dashboard({ onLogout }) {
     const response = await fetch(`/api/bookings?id=${id}`, { method: 'DELETE' });
     if (response.ok) {
       setBookings(bookings.filter((b) => b.id !== id));
+    }
+  };
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch('/api/messages');
+      const data = await response.json();
+      setMessages(data.data || []);
+    } catch (err) {
+      console.error('Failed to fetch messages:', err);
+    }
+  };
+
+  const handleMarkRead = async (id) => {
+    await fetch(`/api/messages?id=${id}`, { method: 'PUT' });
+    setMessages(messages.map(m => m.id === id ? { ...m, is_read: true } : m));
+  };
+
+  const handleDeleteMessage = async (id) => {
+    if (!window.confirm(t.confirmDeleteMsg)) return;
+    const response = await fetch(`/api/messages?id=${id}`, { method: 'DELETE' });
+    if (response.ok) {
+      setMessages(messages.filter(m => m.id !== id));
     }
   };
 
@@ -113,6 +150,12 @@ export default function Dashboard({ onLogout }) {
           onClick={() => setActiveTab('bookings')}
         >
           {t.bookings} ({bookings.length})
+        </button>
+        <button
+          className={activeTab === 'messages' ? 'active' : ''}
+          onClick={() => setActiveTab('messages')}
+        >
+          {t.messages} ({messages.filter(m => !m.is_read).length})
         </button>
       </nav>
 
@@ -187,6 +230,33 @@ export default function Dashboard({ onLogout }) {
                   ))}
                 </tbody>
               </table>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'messages' && (
+          <div className="messages-list">
+            {messages.length === 0 ? (
+              <p className="empty-text">{t.noMessages}</p>
+            ) : (
+              <div className="messages-cards">
+                {messages.map((msg) => (
+                  <div key={msg.id} className={`message-card ${msg.is_read ? 'read' : 'unread'}`}>
+                    <div className="message-header">
+                      <strong>{msg.name}</strong>
+                      <span className="message-email">{msg.email}</span>
+                      <span className="message-date">{new Date(msg.created_at).toLocaleString()}</span>
+                    </div>
+                    <p className="message-body">{msg.message}</p>
+                    <div className="message-actions">
+                      {!msg.is_read && (
+                        <button className="mark-read-btn" onClick={() => handleMarkRead(msg.id)}>{t.markRead}</button>
+                      )}
+                      <button className="delete-btn" onClick={() => handleDeleteMessage(msg.id)}>{t.deleteMsg}</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}

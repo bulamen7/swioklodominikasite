@@ -467,3 +467,72 @@
   outline: none;
   border-color: var(--primary-color);
 }
+
+
+/* Messages */
+.messages-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.message-card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #17a2b8;
+}
+
+.message-card.unread {
+  border-left-color: #ffc107;
+  background: #fffef5;
+}
+
+.message-card.read {
+  border-left-color: #28a745;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.message-email {
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.message-date {
+  color: var(--text-light);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+.message-body {
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.message-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mark-read-btn {
+  background: #17a2b8;
+  color: var(--white);
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.mark-read-btn:hover {
+  background: #138496;
+}

@@ -62,6 +62,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Save message to database via Supabase REST API
+	if err := saveMessage(req.Name, req.Email, req.Message); err != nil {
+		fmt.Fprintf(os.Stderr, "Save message error: %v\n", err)
+		// Don't fail the request — email was sent successfully
+	}
+
 	writeJSON(w, http.StatusOK, contactResponse{Success: true, Message: "Email sent successfully"})
 }
 
@@ -120,4 +126,47 @@ func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
+}
+
+func saveMessage(name, email, message string) error {
+	supabaseURL := os.Getenv("SUPABASE_URL")
+	supabaseKey := os.Getenv("SUPABASE_SERVICE_KEY")
+
+	if supabaseURL == "" || supabaseKey == "" {
+		return fmt.Errorf("supabase not configured")
+	}
+
+	payload := map[string]string{
+		"name":    name,
+		"email":   email,
+		"message": message,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", supabaseURL+"/rest/v1/messages", bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("apikey", supabaseKey)
+	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Prefer", "return=minimal")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("supabase error (status %d): %s", resp.StatusCode, string(respBody))
+	}
+
+	return nil
 }
