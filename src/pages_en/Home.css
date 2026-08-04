@@ -3,7 +3,7 @@
   color: var(--white);
   padding: 5rem 2rem;
   text-align: center;
-  background-image: url('/src/assets/background.jpg');
+  background-image: url('/src/assets/background.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
