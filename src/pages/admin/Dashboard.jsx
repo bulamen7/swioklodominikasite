@@ -33,6 +33,12 @@ export default function Dashboard({ onLogout }) {
     markRead: 'Oznacz jako przeczytane',
     deleteMsg: 'Usuń',
     confirmDeleteMsg: 'Czy na pewno chcesz usunąć tę wiadomość?',
+    reviews: 'Opinie',
+    noReviews: 'Brak opinii',
+    approve: 'Zatwierdź',
+    reject: 'Odrzuć',
+    approved: 'Zatwierdzona',
+    pendingReview: 'Oczekuje',
   } : {
     title: 'Admin Panel',
     logout: 'Log out',
@@ -61,10 +67,17 @@ export default function Dashboard({ onLogout }) {
     markRead: 'Mark as read',
     deleteMsg: 'Delete',
     confirmDeleteMsg: 'Are you sure you want to delete this message?',
+    reviews: 'Reviews',
+    noReviews: 'No reviews',
+    approve: 'Approve',
+    reject: 'Reject',
+    approved: 'Approved',
+    pendingReview: 'Pending',
   };
 
   const [bookings, setBookings] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('bookings');
   const [invoiceMonth, setInvoiceMonth] = useState(() => {
@@ -75,6 +88,7 @@ export default function Dashboard({ onLogout }) {
   useEffect(() => {
     fetchBookings();
     fetchMessages();
+    fetchReviews();
   }, []);
 
   const fetchBookings = async () => {
@@ -121,6 +135,31 @@ export default function Dashboard({ onLogout }) {
     }
   };
 
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch('/api/reviews?all=true');
+      const data = await response.json();
+      setReviews(data.data || []);
+    } catch (err) {
+      console.error('Failed to fetch reviews:', err);
+    }
+  };
+
+  const handleApproveReview = async (id) => {
+    await fetch(`/api/reviews?id=${id}&action=approve`, { method: 'PUT' });
+    setReviews(reviews.map(r => r.id === id ? { ...r, is_approved: true } : r));
+  };
+
+  const handleRejectReview = async (id) => {
+    await fetch(`/api/reviews?id=${id}&action=reject`, { method: 'PUT' });
+    setReviews(reviews.map(r => r.id === id ? { ...r, is_approved: false } : r));
+  };
+
+  const handleDeleteReview = async (id) => {
+    await fetch(`/api/reviews?id=${id}`, { method: 'DELETE' });
+    setReviews(reviews.filter(r => r.id !== id));
+  };
+
   const handleStatusChange = async (id, newStatus) => {
     const response = await fetch(`/api/bookings?id=${id}`, {
       method: 'PUT',
@@ -156,6 +195,12 @@ export default function Dashboard({ onLogout }) {
           onClick={() => setActiveTab('messages')}
         >
           {t.messages} ({messages.filter(m => !m.is_read).length})
+        </button>
+        <button
+          className={activeTab === 'reviews' ? 'active' : ''}
+          onClick={() => setActiveTab('reviews')}
+        >
+          {t.reviews} ({reviews.filter(r => !r.is_approved).length})
         </button>
       </nav>
 
@@ -253,6 +298,38 @@ export default function Dashboard({ onLogout }) {
                         <button className="mark-read-btn" onClick={() => handleMarkRead(msg.id)}>{t.markRead}</button>
                       )}
                       <button className="delete-btn" onClick={() => handleDeleteMessage(msg.id)}>{t.deleteMsg}</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'reviews' && (
+          <div className="messages-list">
+            {reviews.length === 0 ? (
+              <p className="empty-text">{t.noReviews}</p>
+            ) : (
+              <div className="messages-cards">
+                {reviews.map((review) => (
+                  <div key={review.id} className={`message-card ${review.is_approved ? 'read' : 'unread'}`}>
+                    <div className="message-header">
+                      <strong>{review.client_name}</strong>
+                      <span className="message-email">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                      <span className="message-date">
+                        {review.is_approved ? t.approved : t.pendingReview}
+                      </span>
+                    </div>
+                    <p className="message-body">{review.content}</p>
+                    <div className="message-actions">
+                      {!review.is_approved && (
+                        <button className="mark-read-btn" onClick={() => handleApproveReview(review.id)}>{t.approve}</button>
+                      )}
+                      {review.is_approved && (
+                        <button className="cancel-btn" onClick={() => handleRejectReview(review.id)}>{t.reject}</button>
+                      )}
+                      <button className="delete-btn" onClick={() => handleDeleteReview(review.id)}>{t.delete}</button>
                     </div>
                   </div>
                 ))}

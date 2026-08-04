@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import Testimonials from '../components/Testimonials';
 import './Home.css';
 
 export default function Home() {
@@ -39,6 +40,7 @@ export default function Home() {
           <Link to="/about" className="learn-more">Learn More About Our Approach →</Link>
         </div>
       </section>
+      <Testimonials />
     </div>
   );
 }

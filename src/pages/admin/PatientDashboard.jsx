@@ -17,6 +17,13 @@ export default function PatientDashboard({ user, onLogout }) {
     visit: 'Wizyta',
     cancel: 'Anuluj',
     invoice: 'Faktura',
+    addReview: 'Dodaj opinię',
+    reviewTitle: 'Dodaj opinię',
+    reviewPlaceholder: 'Napisz swoją opinię...',
+    reviewRating: 'Ocena',
+    reviewSubmit: 'Wyślij opinię',
+    reviewSent: 'Opinia wysłana do akceptacji!',
+    reviewClose: 'Zamknij',
     pending: 'Oczekująca',
     confirmed: 'Potwierdzona',
     cancelled: 'Anulowana',
@@ -45,6 +52,13 @@ export default function PatientDashboard({ user, onLogout }) {
     visit: 'Appointment',
     cancel: 'Cancel',
     invoice: 'Invoice',
+    addReview: 'Add review',
+    reviewTitle: 'Add a review',
+    reviewPlaceholder: 'Write your review...',
+    reviewRating: 'Rating',
+    reviewSubmit: 'Submit review',
+    reviewSent: 'Review submitted for approval!',
+    reviewClose: 'Close',
     pending: 'Pending',
     confirmed: 'Confirmed',
     cancelled: 'Cancelled',
@@ -80,6 +94,10 @@ export default function PatientDashboard({ user, onLogout }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMsg, setPasswordMsg] = useState('');
   const [showProfile, setShowProfile] = useState(false);
+  const [showReview, setShowReview] = useState(false);
+  const [reviewContent, setReviewContent] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewMsg, setReviewMsg] = useState('');
 
   useEffect(() => {
     fetchProfile();
@@ -170,6 +188,25 @@ export default function PatientDashboard({ user, onLogout }) {
     }
   };
 
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    const response = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_name: profile?.full_name || user.email,
+        user_id: user.id,
+        rating: reviewRating,
+        content: reviewContent,
+      }),
+    });
+    if (response.ok) {
+      setReviewMsg(t.reviewSent);
+      setReviewContent('');
+      setReviewRating(5);
+    }
+  };
+
   return (
     <div className="admin-dashboard">
       <header className="admin-header">
@@ -178,6 +215,7 @@ export default function PatientDashboard({ user, onLogout }) {
           <span className="user-email">{profile?.full_name || user.email}</span>
           <button className="change-password-btn" onClick={() => setShowProfile(true)}>{t.profile}</button>
           <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>{t.changePassword}</button>
+          <button className="change-password-btn" onClick={() => setShowReview(true)}>{t.addReview}</button>
           <button className="logout-btn" onClick={handleLogout}>{t.logout}</button>
         </div>
       </header>
@@ -260,6 +298,36 @@ export default function PatientDashboard({ user, onLogout }) {
 
       {showProfile && (
         <ProfileModal user={user} onClose={() => { setShowProfile(false); fetchProfile(); }} />
+      )}
+
+      {showReview && (
+        <div className="login-prompt-overlay" onClick={() => setShowReview(false)}>
+          <div className="login-prompt" onClick={(e) => e.stopPropagation()}>
+            <h3>{t.reviewTitle}</h3>
+            {reviewMsg ? (
+              <p style={{ color: '#28a745', textAlign: 'center' }}>{reviewMsg}</p>
+            ) : (
+              <form onSubmit={handleSubmitReview}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>{t.reviewRating}</label>
+                <div style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>
+                  {[1,2,3,4,5].map(star => (
+                    <span key={star} onClick={() => setReviewRating(star)} style={{ cursor: 'pointer', color: star <= reviewRating ? '#f5a623' : '#ddd' }}>★</span>
+                  ))}
+                </div>
+                <textarea
+                  placeholder={t.reviewPlaceholder}
+                  value={reviewContent}
+                  onChange={(e) => setReviewContent(e.target.value)}
+                  required
+                  rows={4}
+                  style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '1rem', fontFamily: 'inherit' }}
+                />
+                <button type="submit" className="login-prompt-btn" style={{ width: '100%', border: 'none', cursor: 'pointer' }}>{t.reviewSubmit}</button>
+              </form>
+            )}
+            <button className="login-prompt-close" onClick={() => { setShowReview(false); setReviewMsg(''); }}>{t.reviewClose}</button>
+          </div>
+        </div>
       )}
     </div>
   );
