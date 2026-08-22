@@ -5,6 +5,8 @@ import { useLanguage } from '../../context/LanguageContext';
 import ServicesTab from './ServicesTab';
 import AvailabilityTab from './AvailabilityTab';
 import ClientProfileView from './ClientProfileView';
+import StatsTab from './StatsTab';
+import PatientsTab from './PatientsTab';
 import './Admin.css';
 
 export default function Dashboard({ onLogout }) {
@@ -47,6 +49,8 @@ export default function Dashboard({ onLogout }) {
     availability: 'Dostępność',
     exportCSV: 'Eksport CSV',
     notes: 'Notatki',
+    stats: 'Statystyki',
+    patients: 'Pacjenci',
   } : {
     title: 'Admin Panel',
     logout: 'Log out',
@@ -85,6 +89,8 @@ export default function Dashboard({ onLogout }) {
     availability: 'Availability',
     exportCSV: 'Export CSV',
     notes: 'Notes',
+    stats: 'Statistics',
+    patients: 'Patients',
   };
 
   const [bookings, setBookings] = useState([]);
@@ -275,6 +281,18 @@ export default function Dashboard({ onLogout }) {
         >
           {t.availability}
         </button>
+        <button
+          className={activeTab === 'stats' ? 'active' : ''}
+          onClick={() => setActiveTab('stats')}
+        >
+          {t.stats}
+        </button>
+        <button
+          className={activeTab === 'patients' ? 'active' : ''}
+          onClick={() => setActiveTab('patients')}
+        >
+          {t.patients}
+        </button>
       </nav>
 
       <div className="admin-invoice-bar">
@@ -433,6 +451,10 @@ export default function Dashboard({ onLogout }) {
         {activeTab === 'services' && <ServicesTab />}
 
         {activeTab === 'availability' && <AvailabilityTab />}
+
+        {activeTab === 'stats' && <StatsTab />}
+
+        {activeTab === 'patients' && <PatientsTab onViewProfile={(email, name) => setClientProfile({ email, name })} />}
       </main>
 
       <div className="admin-invoice-bar">
