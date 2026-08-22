@@ -9,11 +9,21 @@ export default function Prices() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [bookingService, setBookingService] = useState('');
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
     });
+    // Fetch services from API
+    fetch('/api/services').then(r => r.json()).then(data => {
+      setServices((data.data || []).map(s => ({
+        title: s.name_pl,
+        duration: s.duration,
+        price: s.price + ' zł',
+        description: s.description_pl || '',
+      })));
+    }).catch(() => {});
   }, []);
 
   const handleBookClick = (serviceName) => {
@@ -24,51 +34,6 @@ export default function Prices() {
       setShowLoginPrompt(true);
     }
   };
-  
-  const services = [
-    {
-      title: "Terapia NDT Bobath",
-      duration: "50 minut",
-      price: "150 zł",
-      description: "Terapia neurodewelopmentalna wspierająca rozwój motoryczny dzieci.",
-      features: ["Indywidualny plan terapii", "Wsparcie rozwoju", "Techniki oparte na dowodach"]
-    },
-    {
-      title: "Fizjoterapia",
-      duration: "50 minut",
-      price: "150 zł",
-      description: "Kompleksowa fizjoterapia dostosowana do potrzeb dziecka.",
-      features: ["Ocena funkcjonalna", "Ćwiczenia terapeutyczne", "Wsparcie rozwoju"]
-    },
-    {
-      title: "Terapia Wad Postawy",
-      duration: "50 minut",
-      price: "150 zł",
-      description: "Korekcja i terapia wad postawy u dzieci.",
-      features: ["Analiza postawy", "Ćwiczenia korekcyjne", "Edukacja rodziców"]
-    },
-    {
-      title: "Terapia Integracji Sensorycznej",
-      duration: "50 minut",
-      price: "150 zł",
-      description: "Wsparcie dzieci w odkrywaniu świata zmysłów i pokonywaniu codziennych trudności.",
-      features: ["Diagnoza sensoryczna", "Terapia SI", "Wsparcie rozwoju"]
-    },
-    {
-      title: "Terapia Ręki",
-      duration: "50 minut",
-      price: "150 zł",
-      description: "Specjalistyczna terapia usprawniająca funkcje ręki.",
-      features: ["Ćwiczenia precyzji", "Rozwój motoryki małej", "Funkcjonalne podejście"]
-    },
-    {
-      title: "Kinesiotaping",
-      duration: "30 minut",
-      price: "80 zł",
-      description: "Aplikacja taśm kinesiotapingowych wspierających terapię.",
-      features: ["Wsparcie mięśni", "Redukcja bólu", "Poprawa funkcji"]
-    }
-  ];
 
   return (
     <div className="prices-page">
@@ -87,11 +52,6 @@ export default function Prices() {
               </div>
               <div className="price-amount">{service.price}</div>
               <p className="price-description">{service.description}</p>
-              <ul className="price-features">
-                {service.features.map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
-                ))}
-              </ul>
               <button className="book-button" onClick={() => handleBookClick(service.title)}>Umów Wizytę</button>
             </div>
           ))}
