@@ -5,25 +5,60 @@ export default function AvailabilityTab() {
   const { language } = useLanguage();
   const [slots, setSlots] = useState([]);
   const [newSlot, setNewSlot] = useState({ day_of_week: 1, time_slot: '09:00' });
+  const [exceptions, setExceptions] = useState([]);
+  const [newException, setNewException] = useState({ date: '', is_blocked: true, reason: '' });
 
   const t = language === 'pl' ? {
     title: 'Zarządzaj dostępnością',
     day: 'Dzień', time: 'Godzina', available: 'Dostępna', unavailable: 'Niedostępna',
     add: 'Dodaj slot', delete: 'Usuń',
     days: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
+    exceptions: 'Wyjątki (blokady dni)',
+    addException: 'Zablokuj dzień',
+    date: 'Data',
+    reason: 'Powód (opcjonalnie)',
+    blocked: 'Zablokowany',
+    noExceptions: 'Brak wyjątków',
   } : {
     title: 'Manage Availability',
     day: 'Day', time: 'Time', available: 'Available', unavailable: 'Unavailable',
     add: 'Add slot', delete: 'Delete',
     days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    exceptions: 'Exceptions (blocked days)',
+    addException: 'Block day',
+    date: 'Date',
+    reason: 'Reason (optional)',
+    blocked: 'Blocked',
+    noExceptions: 'No exceptions',
   };
 
-  useEffect(() => { fetchSlots(); }, []);
+  useEffect(() => { fetchSlots(); fetchExceptions(); }, []);
 
   const fetchSlots = async () => {
     const res = await fetch('/api/availability');
     const data = await res.json();
     setSlots(data.data || []);
+  };
+
+  const fetchExceptions = async () => {
+    const res = await fetch('/api/exceptions');
+    const data = await res.json();
+    setExceptions(data.data || []);
+  };
+
+  const handleAddException = async () => {
+    if (!newException.date) return;
+    await fetch('/api/exceptions', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newException),
+    });
+    setNewException({ date: '', is_blocked: true, reason: '' });
+    fetchExceptions();
+  };
+
+  const handleDeleteException = async (id) => {
+    setExceptions(exceptions.filter(e => e.id !== id));
+    await fetch(`/api/exceptions?id=${id}`, { method: 'DELETE' });
   };
 
   const handleToggle = async (slot) => {
@@ -88,6 +123,30 @@ export default function AvailabilityTab() {
           </div>
         );
       })}
+
+      <div className="admin-form-card" style={{ marginTop: '2rem' }}>
+        <h3>{t.exceptions}</h3>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1rem' }}>
+          <input type="date" value={newException.date} onChange={e => setNewException({ ...newException, date: e.target.value })} />
+          <input type="text" placeholder={t.reason} value={newException.reason} onChange={e => setNewException({ ...newException, reason: e.target.value })} style={{ padding: '0.5rem', border: '1px solid #ddd', borderRadius: '6px' }} />
+          <button className="mark-read-btn" onClick={handleAddException}>{t.addException}</button>
+        </div>
+
+        {exceptions.length === 0 ? (
+          <p style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>{t.noExceptions}</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {exceptions.map(ex => (
+              <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem 1rem', background: '#f8d7da', borderRadius: '6px' }}>
+                <strong>{ex.date}</strong>
+                <span style={{ color: '#721c24' }}>{t.blocked}</span>
+                {ex.reason && <span style={{ color: '#666' }}>({ex.reason})</span>}
+                <button onClick={() => handleDeleteException(ex.id)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#dc3545', cursor: 'pointer', fontSize: '1.1rem' }}>×</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -45,11 +45,28 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
       fetchBookedSlots(selectedDate);
       // Fetch available hours for this day of week
       const date = new Date(selectedDate);
-      const dayOfWeek = date.getDay() === 0 ? 0 : date.getDay(); // 0=Sun, 1=Mon...
-      fetch(`/api/availability?day=${dayOfWeek}`).then(r => r.json()).then(data => {
-        const hours = (data.data || []).filter(s => s.is_available).map(s => s.time_slot);
-        setAvailableHours(hours);
-      }).catch(() => setAvailableHours([]));
+      const dayOfWeek = date.getDay() === 0 ? 0 : date.getDay();
+
+      // Check exceptions first
+      fetch(`/api/exceptions?date=${selectedDate}`).then(r => r.json()).then(data => {
+        if (data.data && data.data.is_blocked) {
+          setAvailableHours([]); // Day is blocked
+        } else if (data.data && data.data.available_hours && data.data.available_hours.length > 0) {
+          setAvailableHours(data.data.available_hours); // Custom hours
+        } else {
+          // Normal availability from schedule
+          fetch(`/api/availability?day=${dayOfWeek}`).then(r => r.json()).then(d => {
+            const hours = (d.data || []).filter(s => s.is_available).map(s => s.time_slot);
+            setAvailableHours(hours);
+          }).catch(() => setAvailableHours([]));
+        }
+      }).catch(() => {
+        // Fallback to normal schedule
+        fetch(`/api/availability?day=${dayOfWeek}`).then(r => r.json()).then(d => {
+          const hours = (d.data || []).filter(s => s.is_available).map(s => s.time_slot);
+          setAvailableHours(hours);
+        }).catch(() => setAvailableHours([]));
+      });
     }
   }, [selectedDate]);
 
