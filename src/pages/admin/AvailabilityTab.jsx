@@ -27,11 +27,11 @@ export default function AvailabilityTab() {
   };
 
   const handleToggle = async (slot) => {
+    setSlots(slots.map(s => s.id === slot.id ? { ...s, is_available: !s.is_available } : s));
     await fetch(`/api/availability?id=${slot.id}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ is_available: !slot.is_available }),
     });
-    fetchSlots();
   };
 
   const handleAdd = async () => {
@@ -43,8 +43,8 @@ export default function AvailabilityTab() {
   };
 
   const handleDelete = async (id) => {
+    setSlots(slots.filter(s => s.id !== id));
     await fetch(`/api/availability?id=${id}`, { method: 'DELETE' });
-    fetchSlots();
   };
 
   // Group by day
