@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import { authFetch } from '../../config/api';
 import './Admin.css';
 
 export default function ClientProfileView({ clientEmail, clientName, onBack }) {
@@ -69,7 +70,7 @@ export default function ClientProfileView({ clientEmail, clientName, onBack }) {
   const fetchClientData = async () => {
     setLoading(true);
     try {
-      const bookingsRes = await fetch('/api/bookings');
+      const bookingsRes = await authFetch('/api/bookings');
       const bookingsData = await bookingsRes.json();
       const clientBookings = (bookingsData.data || []).filter(
         b => b.client_email.toLowerCase() === clientEmail.toLowerCase()

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
+import { authFetch } from '../../config/api';
 import './BookingModal.css';
 
 const SERVICES = [
@@ -54,7 +55,7 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
 
   const fetchBookedSlots = async (date) => {
     try {
-      const response = await fetch(`/api/bookings?date=${date}`);
+      const response = await authFetch(`/api/bookings?date=${date}`);
       const data = await response.json();
       const slots = (data.data || [])
         .filter(b => b.status !== 'cancelled')
@@ -82,9 +83,8 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
     }
 
     try {
-      const response = await fetch('/api/bookings', {
+      const response = await authFetch('/api/bookings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           client_name: user.user_metadata?.full_name || user.email,
           client_email: user.email,

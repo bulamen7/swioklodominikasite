@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
+import { authFetch } from '../../config/api';
 import { useLanguage } from '../../context/LanguageContext';
 import ServicesTab from './ServicesTab';
 import AvailabilityTab from './AvailabilityTab';
@@ -110,7 +111,7 @@ export default function Dashboard({ onLogout }) {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/bookings');
+      const response = await authFetch('/api/bookings');
       const data = await response.json();
       setBookings(data.data || []);
     } catch (err) {
@@ -121,8 +122,7 @@ export default function Dashboard({ onLogout }) {
 
   const handleDelete = async (id) => {
     if (!window.confirm(t.confirmDelete)) return;
-
-    const response = await fetch(`/api/bookings?id=${id}`, { method: 'DELETE' });
+    const response = await authFetch(`/api/bookings?id=${id}`, { method: 'DELETE' });
     if (response.ok) {
       setBookings(bookings.filter((b) => b.id !== id));
     }
@@ -177,9 +177,8 @@ export default function Dashboard({ onLogout }) {
   };
 
   const handleStatusChange = async (id, newStatus) => {
-    const response = await fetch(`/api/bookings?id=${id}`, {
+    const response = await authFetch(`/api/bookings?id=${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     });
     if (response.ok) {

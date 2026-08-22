@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
+import { authFetch } from '../../config/api';
 import { useLanguage } from '../../context/LanguageContext';
 import ProfileModal from './ProfileModal';
 import './Admin.css';
@@ -119,7 +120,7 @@ export default function PatientDashboard({ user, onLogout }) {
   const fetchMyBookings = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/bookings`);
+      const response = await authFetch('/api/bookings');
       const data = await response.json();
       // Filter to only show this user's bookings
       const myBookings = (data.data || []).filter(
@@ -193,9 +194,8 @@ export default function PatientDashboard({ user, onLogout }) {
   const handleCancel = async (id) => {
     if (!window.confirm(t.confirmCancel)) return;
 
-    const response = await fetch(`/api/bookings?id=${id}`, {
+    const response = await authFetch(`/api/bookings?id=${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: 'cancelled' }),
     });
 

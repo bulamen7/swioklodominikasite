@@ -9,6 +9,8 @@ export default function Login({ onLogin, onSwitch, onForgotPassword }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState(null);
 
   const t = language === 'pl' ? {
     title: 'Logowanie',
@@ -37,16 +39,37 @@ export default function Login({ onLogin, onSwitch, onForgotPassword }) {
     setLoading(true);
     setError('');
 
+    // Check if locked
+    if (lockedUntil && Date.now() < lockedUntil) {
+      const remaining = Math.ceil((lockedUntil - Date.now()) / 1000);
+      setError(language === 'pl'
+        ? `Za dużo prób. Spróbuj za ${remaining}s.`
+        : `Too many attempts. Try again in ${remaining}s.`);
+      setLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      setError(t.errorAuth);
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      if (newAttempts >= 5) {
+        setLockedUntil(Date.now() + 60000); // 1 minute lockout
+        setError(language === 'pl'
+          ? 'Za dużo prób. Konto zablokowane na 60 sekund.'
+          : 'Too many attempts. Account locked for 60 seconds.');
+        setTimeout(() => { setAttempts(0); setLockedUntil(null); }, 60000);
+      } else {
+        setError(t.errorAuth);
+      }
       setLoading(false);
     } else if (!data.user?.email_confirmed_at) {
       await supabase.auth.signOut();
       setError(t.errorConfirm);
       setLoading(false);
     } else {
+      setAttempts(0);
       onLogin();
     }
   };
