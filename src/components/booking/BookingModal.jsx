@@ -22,6 +22,8 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [allSlots, setAllSlots] = useState([]);
+  const [allExceptions, setAllExceptions] = useState([]);
 
   const isPL = language === 'pl';
 
@@ -33,9 +35,15 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
 
   useEffect(() => {
     if (isOpen) {
-      // Fetch services from API
-      fetch('/api/services').then(r => r.json()).then(data => {
-        setServices((data.data || []).map(s => language === 'pl' ? s.name_pl : s.name_en));
+      // Prefetch ALL data at once when modal opens
+      Promise.all([
+        fetch('/api/services').then(r => r.json()),
+        fetch('/api/availability').then(r => r.json()),
+        fetch('/api/exceptions').then(r => r.json()),
+      ]).then(([servicesData, slotsData, exceptionsData]) => {
+        setServices((servicesData.data || []).map(s => language === 'pl' ? s.name_pl : s.name_en));
+        setAllSlots(slotsData.data || []);
+        setAllExceptions(exceptionsData.data || []);
       }).catch(() => {});
     }
   }, [isOpen, language]);
@@ -43,32 +51,24 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
   useEffect(() => {
     if (selectedDate) {
       fetchBookedSlots(selectedDate);
-      // Fetch available hours for this day of week
-      const date = new Date(selectedDate);
-      const dayOfWeek = date.getDay() === 0 ? 0 : date.getDay();
 
-      // Check exceptions first
-      fetch(`/api/exceptions?date=${selectedDate}`).then(r => r.json()).then(data => {
-        if (data.data && data.data.is_blocked) {
-          setAvailableHours([]); // Day is blocked
-        } else if (data.data && data.data.available_hours && data.data.available_hours.length > 0) {
-          setAvailableHours(data.data.available_hours); // Custom hours
-        } else {
-          // Normal availability from schedule
-          fetch(`/api/availability?day=${dayOfWeek}`).then(r => r.json()).then(d => {
-            const hours = (d.data || []).filter(s => s.is_available).map(s => s.time_slot);
-            setAvailableHours(hours);
-          }).catch(() => setAvailableHours([]));
-        }
-      }).catch(() => {
-        // Fallback to normal schedule
-        fetch(`/api/availability?day=${dayOfWeek}`).then(r => r.json()).then(d => {
-          const hours = (d.data || []).filter(s => s.is_available).map(s => s.time_slot);
-          setAvailableHours(hours);
-        }).catch(() => setAvailableHours([]));
-      });
+      // Calculate available hours from cached data (instant!)
+      const date = new Date(selectedDate);
+      const dayOfWeek = date.getDay();
+
+      // Check exceptions
+      const exception = allExceptions.find(e => e.date === selectedDate);
+      if (exception && exception.is_blocked) {
+        setAvailableHours([]);
+      } else if (exception && exception.available_hours && exception.available_hours.length > 0) {
+        setAvailableHours(exception.available_hours);
+      } else {
+        // Normal schedule from cached slots
+        const hours = allSlots.filter(s => s.day_of_week === dayOfWeek && s.is_available).map(s => s.time_slot);
+        setAvailableHours(hours);
+      }
     }
-  }, [selectedDate]);
+  }, [selectedDate, allSlots, allExceptions]);
 
   const fetchBookedSlots = async (date) => {
     try {
