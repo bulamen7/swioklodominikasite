@@ -1,69 +1,42 @@
 # Roadmap — Dominika Swioklo Therapy Site
 
-## Aktualny stan (Sierpień 2026)
+## Completed
 
-### Co dziala:
-- [x] Strona React z dwoma jezykami (PL/EN)
-- [x] Automatyczne wykrywanie jezyka przegladarki
-- [x] Formularz kontaktowy (email via Resend API)
-- [x] Rezerwacja wizyt (Google Calendar Appointment Scheduling)
-- [x] Responsywny design
-- [x] Deploy na Vercel (auto-deploy po pushu)
-- [x] Custom domena swioklodominika.pl
-- [x] Strona 404
+- [x] React + Vite frontend with PL/EN
+- [x] Go serverless backend on Vercel
+- [x] Supabase database + auth
+- [x] Booking system (date/time picker, conflict detection)
+- [x] Google Calendar sync
+- [x] Email notifications (confirmation, reminders, admin alerts)
+- [x] Admin panel (bookings, messages, reviews, pricing, availability, stats, patients)
+- [x] Patient panel (my visits, cancel, review, invoice, profile, password)
+- [x] Invoice PDF generation (single + monthly)
+- [x] Reviews system (submit, moderate, display on homepage)
+- [x] Contact form with DB storage
+- [x] Responsive design + hamburger menu
+- [x] Dark mode
+- [x] SEO meta tags + Schema.org
+- [x] Google Analytics + cookie consent
+- [x] Code splitting + lazy loading
+- [x] Rate limiting on login
+- [x] API authorization (bookings protected)
+- [x] Password reset flow
+- [x] Full bilingual translation
+- [x] Session notes per booking
+- [x] Client profile view (admin)
+- [x] Statistics dashboard
+- [x] Patient list
+- [x] CSV export
+- [x] Availability management
+- [x] Dynamic pricing from DB
 
-### Hosting & Infrastruktura:
-- Frontend: Vercel
-- Backend: Vercel Serverless Functions
-- Email: Resend API
-- Rezerwacje: Google Calendar
-- Domena: swioklodominika.pl (DNS via OVH)
+## Future Ideas
 
----
-
-## Nastepne kroki (priorytetowo)
-
-### Faza 1 — Poprawa UX i stabilnosci
-- [x] Dodac loading state na formularz kontaktowy (spinner/animacja)
-- [x] Dodac walidacje email po stronie frontendu (regex)
-- [x] Dodac meta tagi SEO (title, description, og:image)
-- [ ] Dodac favicon
-- [x] Poprawic mobile navigation (hamburger menu)
-- [x] Dodac footer z linkami i informacjami
-
-### Faza 2 — Funkcjonalnosc
-- [x] Panel administracyjny (login + dashboard)
-  - Podglad wiadomosci z formularza
-  - Edycja cennika
-  - Zarzadzanie dostepnoscia
-- [ ] Blog / artykuly o terapii (dobre dla SEO)
-- [ ] Newsletter (zbieranie emaili zainteresowanych)
-- [ ] Wlasny system rezerwacji (zamiast Google Calendar)
-  - Wybor daty i godziny
-  - Potwierdzenie mailem
-  - Przypomnienia
-
-### Faza 3 — Baza danych i backend
-- [ ] Dodac baze danych (Vercel Postgres lub Supabase)
-  - Przechowywanie wiadomosci kontaktowych
-  - Przechowywanie rezerwacji
-  - Dane uzytkownikow (panel admin)
-- [ ] Autentykacja (NextAuth lub Clerk)
-- [ ] API endpoints dla panelu admina
-
-### Faza 4 — Marketing i skalowanie
-- [ ] Google Analytics lub Plausible (prywatnosc)
-- [ ] Integracja z Google My Business
-- [ ] Optymalizacja Core Web Vitals
-- [ ] Testy A/B na landing page
-- [ ] Opinie klientow (testimonials)
-
----
-
-## Notatki techniczne
-
-- Env vars sa w Vercel dashboard (nie w repo)
-- Serverless function: api/contact.js
-- Jezyki: osobne foldery pages_pl/ i pages_en/ (nie i18n library)
-- Router: HashRouter (dziala z SPA na Vercel)
-- Resend domena: swioklodominika.pl (zweryfikowana)
+- [ ] Blog with admin editor (articles for SEO)
+- [ ] Newsletter signup
+- [ ] PWA (installable on phone)
+- [ ] Automated tests
+- [ ] Push notifications (browser)
+- [ ] Multi-therapist support
+- [ ] Online payment integration
+- [ ] Video consultation booking
