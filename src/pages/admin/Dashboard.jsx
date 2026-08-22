@@ -3,7 +3,7 @@ import { supabase } from '../../config/supabase';
 import { useLanguage } from '../../context/LanguageContext';
 import ServicesTab from './ServicesTab';
 import AvailabilityTab from './AvailabilityTab';
-import ClientProfileModal from './ClientProfileModal';
+import ClientProfileView from './ClientProfileView';
 import './Admin.css';
 
 export default function Dashboard({ onLogout }) {
@@ -226,6 +226,17 @@ export default function Dashboard({ onLogout }) {
     else setNoteMsg(language === 'pl' ? 'Błąd zapisu' : 'Save failed');
   };
 
+  // Show client profile view
+  if (clientProfile) {
+    return (
+      <ClientProfileView
+        clientEmail={clientProfile.email}
+        clientName={clientProfile.name}
+        onBack={() => setClientProfile(null)}
+      />
+    );
+  }
+
   return (
     <div className="admin-dashboard">
       <header className="admin-header">
@@ -434,13 +445,6 @@ export default function Dashboard({ onLogout }) {
         </div>
       )}
 
-      {clientProfile && (
-        <ClientProfileModal
-          clientEmail={clientProfile.email}
-          clientName={clientProfile.name}
-          onClose={() => setClientProfile(null)}
-        />
-      )}
     </div>
   );
 }
