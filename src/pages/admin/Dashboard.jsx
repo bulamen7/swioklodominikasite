@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
 import { useLanguage } from '../../context/LanguageContext';
+import ServicesTab from './ServicesTab';
+import AvailabilityTab from './AvailabilityTab';
 import './Admin.css';
 
 export default function Dashboard({ onLogout }) {
@@ -39,6 +41,10 @@ export default function Dashboard({ onLogout }) {
     reject: 'Odrzuć',
     approved: 'Zatwierdzona',
     pendingReview: 'Oczekuje',
+    services: 'Cennik',
+    availability: 'Dostępność',
+    exportCSV: 'Eksport CSV',
+    notes: 'Notatki',
   } : {
     title: 'Admin Panel',
     logout: 'Log out',
@@ -73,6 +79,10 @@ export default function Dashboard({ onLogout }) {
     reject: 'Reject',
     approved: 'Approved',
     pendingReview: 'Pending',
+    services: 'Pricing',
+    availability: 'Availability',
+    exportCSV: 'Export CSV',
+    notes: 'Notes',
   };
 
   const [bookings, setBookings] = useState([]);
@@ -80,6 +90,9 @@ export default function Dashboard({ onLogout }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('bookings');
+  const [noteModal, setNoteModal] = useState(null);
+  const [noteText, setNoteText] = useState('');
+  const [noteMsg, setNoteMsg] = useState('');
   const [invoiceMonth, setInvoiceMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -176,6 +189,41 @@ export default function Dashboard({ onLogout }) {
     onLogout();
   };
 
+  const exportCSV = () => {
+    if (bookings.length === 0) return;
+    const headers = ['Date', 'Time', 'Client', 'Email', 'Service', 'Status'];
+    const rows = bookings.map(b => [b.date, b.time_slot, b.client_name, b.client_email, b.service || '-', b.status]);
+    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bookings-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const openNoteModal = async (bookingId) => {
+    setNoteModal(bookingId);
+    setNoteText('');
+    setNoteMsg('');
+    try {
+      const res = await fetch(`/api/notes?booking_id=${bookingId}`);
+      const data = await res.json();
+      if (data.data && data.data.note) setNoteText(data.data.note);
+    } catch (err) {}
+  };
+
+  const saveNote = async () => {
+    if (!noteModal || !noteText) return;
+    const res = await fetch('/api/notes', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ booking_id: noteModal, note: noteText }),
+    });
+    if (res.ok) setNoteMsg(language === 'pl' ? 'Zapisano!' : 'Saved!');
+    else setNoteMsg(language === 'pl' ? 'Błąd zapisu' : 'Save failed');
+  };
+
   return (
     <div className="admin-dashboard">
       <header className="admin-header">
@@ -201,6 +249,18 @@ export default function Dashboard({ onLogout }) {
           onClick={() => setActiveTab('reviews')}
         >
           {t.reviews} ({reviews.filter(r => !r.is_approved).length})
+        </button>
+        <button
+          className={activeTab === 'services' ? 'active' : ''}
+          onClick={() => setActiveTab('services')}
+        >
+          {t.services}
+        </button>
+        <button
+          className={activeTab === 'availability' ? 'active' : ''}
+          onClick={() => setActiveTab('availability')}
+        >
+          {t.availability}
         </button>
       </nav>
 
@@ -267,6 +327,9 @@ export default function Dashboard({ onLogout }) {
                             {t.invoice}
                           </a>
                         )}
+                        <button className="mark-read-btn" onClick={() => openNoteModal(booking.id)} style={{ marginRight: '0.3rem' }}>
+                          {t.notes}
+                        </button>
                         <button className="delete-btn" onClick={() => handleDelete(booking.id)}>
                           {t.delete}
                         </button>
@@ -337,7 +400,37 @@ export default function Dashboard({ onLogout }) {
             )}
           </div>
         )}
+
+        {activeTab === 'services' && <ServicesTab />}
+
+        {activeTab === 'availability' && <AvailabilityTab />}
       </main>
+
+      <div className="admin-invoice-bar">
+        <button className="invoice-monthly-btn" onClick={exportCSV}>{t.exportCSV}</button>
+      </div>
+
+      {noteModal && (
+        <div className="login-prompt-overlay" onClick={() => setNoteModal(null)}>
+          <div className="login-prompt" onClick={(e) => e.stopPropagation()} style={{ textAlign: 'left' }}>
+            <h3>{t.notes}</h3>
+            <textarea
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              placeholder={language === 'pl' ? 'Notatka terapeuty...' : 'Therapist note...'}
+              rows={6}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd', fontFamily: 'inherit', marginBottom: '1rem' }}
+            />
+            {noteMsg && <p style={{ color: noteMsg.includes('!') ? '#28a745' : '#dc3545', fontSize: '0.9rem' }}>{noteMsg}</p>}
+            <button className="login-prompt-btn" onClick={saveNote} style={{ width: '100%', border: 'none', cursor: 'pointer' }}>
+              {language === 'pl' ? 'Zapisz notatkę' : 'Save note'}
+            </button>
+            <button className="login-prompt-close" onClick={() => setNoteModal(null)}>
+              {language === 'pl' ? 'Zamknij' : 'Close'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,10 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
 import './BookingModal.css';
 
-const AVAILABLE_HOURS = [
-  '09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'
-];
-
 const SERVICES = [
   'Terapia NDT Bobath',
   'Fizjoterapia',
@@ -19,6 +15,8 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
   const [selectedService, setSelectedService] = useState(preselectedService || '');
   const [notes, setNotes] = useState('');
   const [bookedSlots, setBookedSlots] = useState([]);
+  const [availableHours, setAvailableHours] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -33,8 +31,24 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
   }, [isOpen, preselectedService]);
 
   useEffect(() => {
+    if (isOpen) {
+      // Fetch services from API
+      fetch('/api/services').then(r => r.json()).then(data => {
+        setServices((data.data || []).map(s => language === 'pl' ? s.name_pl : s.name_en));
+      }).catch(() => {});
+    }
+  }, [isOpen, language]);
+
+  useEffect(() => {
     if (selectedDate) {
       fetchBookedSlots(selectedDate);
+      // Fetch available hours for this day of week
+      const date = new Date(selectedDate);
+      const dayOfWeek = date.getDay() === 0 ? 0 : date.getDay(); // 0=Sun, 1=Mon...
+      fetch(`/api/availability?day=${dayOfWeek}`).then(r => r.json()).then(data => {
+        const hours = (data.data || []).filter(s => s.is_available).map(s => s.time_slot);
+        setAvailableHours(hours);
+      }).catch(() => setAvailableHours([]));
     }
   }, [selectedDate]);
 
@@ -201,7 +215,7 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
           <div className="booking-times">
             <h3>{isPL ? 'Wybierz godzinę:' : 'Select time:'}</h3>
             <div className="time-grid">
-              {AVAILABLE_HOURS.map(time => {
+              {availableHours.map(time => {
                 const isBooked = bookedSlots.includes(time);
                 const isSelected = selectedTime === time;
                 return (
@@ -226,7 +240,7 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
             <h3>{isPL ? 'Wybierz usługę:' : 'Select service:'}</h3>
             <select value={selectedService} onChange={(e) => setSelectedService(e.target.value)}>
               <option value="">{isPL ? '-- Wybierz --' : '-- Select --'}</option>
-              {SERVICES.map(s => <option key={s} value={s}>{s}</option>)}
+              {services.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
         )}
