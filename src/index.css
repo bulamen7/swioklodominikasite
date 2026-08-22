@@ -106,3 +106,12 @@ main, .home, .contact-page, .prices-page, .about-page {
 [data-theme="dark"] .footer {
   background: #222;
 }
+
+
+[data-theme="dark"] .hero::before,
+[data-theme="dark"] .prices-header::before,
+[data-theme="dark"] .contact-header::before,
+[data-theme="dark"] .about-header::before {
+  background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+  opacity: 0.85;
+}
