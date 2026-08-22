@@ -13,12 +13,11 @@ const HomeEN = lazy(() => import('./pages_en/Home'));
 const PricesEN = lazy(() => import('./pages_en/Prices'));
 const AboutEN = lazy(() => import('./pages_en/About'));
 const ContactEN = lazy(() => import('./pages_en/Contact'));
-const AppointmentEN = lazy(() => import('./pages_en/Appointment'));
 const HomePL = lazy(() => import('./pages_pl/Home'));
 const PricesPL = lazy(() => import('./pages_pl/Prices'));
 const AboutPL = lazy(() => import('./pages_pl/About'));
 const ContactPL = lazy(() => import('./pages_pl/Contact'));
-const AppointmentPL = lazy(() => import('./pages_pl/Appointment'));
+
 const AdminApp = lazy(() => import('./pages/admin/AdminApp'));
 
 function NotFound() {
@@ -43,7 +42,6 @@ function AppContent() {
   const Prices = language === 'en' ? PricesEN : PricesPL;
   const About = language === 'en' ? AboutEN : AboutPL;
   const Contact = language === 'en' ? ContactEN : ContactPL;
-  const Appointment = language === 'en' ? AppointmentEN : AppointmentPL;
   
   return (
     <>
@@ -54,7 +52,6 @@ function AppContent() {
           <Route path="/prices" element={<Prices />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/appointment" element={<Appointment />} />
           <Route path="/admin" element={<AdminApp />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
