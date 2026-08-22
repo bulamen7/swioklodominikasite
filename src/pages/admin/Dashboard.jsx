@@ -3,6 +3,7 @@ import { supabase } from '../../config/supabase';
 import { useLanguage } from '../../context/LanguageContext';
 import ServicesTab from './ServicesTab';
 import AvailabilityTab from './AvailabilityTab';
+import ClientProfileModal from './ClientProfileModal';
 import './Admin.css';
 
 export default function Dashboard({ onLogout }) {
@@ -93,6 +94,7 @@ export default function Dashboard({ onLogout }) {
   const [noteModal, setNoteModal] = useState(null);
   const [noteText, setNoteText] = useState('');
   const [noteMsg, setNoteMsg] = useState('');
+  const [clientProfile, setClientProfile] = useState(null);
   const [invoiceMonth, setInvoiceMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -306,7 +308,7 @@ export default function Dashboard({ onLogout }) {
                     <tr key={booking.id} className={`row-${booking.status}`}>
                       <td>{booking.date}</td>
                       <td>{booking.time_slot}</td>
-                      <td>{booking.client_name}</td>
+                      <td><a href="#" className="client-link" onClick={(e) => { e.preventDefault(); setClientProfile({ email: booking.client_email, name: booking.client_name }); }}>{booking.client_name}</a></td>
                       <td>{booking.client_email}</td>
                       <td>{booking.service || '-'}</td>
                       <td>
@@ -430,6 +432,14 @@ export default function Dashboard({ onLogout }) {
             </button>
           </div>
         </div>
+      )}
+
+      {clientProfile && (
+        <ClientProfileModal
+          clientEmail={clientProfile.email}
+          clientName={clientProfile.name}
+          onClose={() => setClientProfile(null)}
+        />
       )}
     </div>
   );

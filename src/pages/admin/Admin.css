@@ -571,3 +571,79 @@
   outline: none;
   border-color: var(--primary-color);
 }
+
+
+/* Client Profile Modal */
+.client-profile-modal {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 700px;
+  width: 95%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.client-info {
+  background: var(--bg-light);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.client-info p {
+  margin: 0.25rem 0;
+}
+
+.client-visits {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.client-visit-card {
+  background: var(--bg-light);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #ddd;
+}
+
+.client-visit-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.client-visit-note {
+  border-top: 1px solid #eee;
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.note-content {
+  color: var(--text-dark);
+  font-style: italic;
+  margin: 0 0 0.5rem;
+  line-height: 1.5;
+}
+
+.note-empty {
+  color: var(--text-light);
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+
+
+.client-link {
+  color: var(--primary-color);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.client-link:hover {
+  color: var(--secondary-color);
+}
