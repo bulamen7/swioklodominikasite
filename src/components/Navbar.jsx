@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase } from '../config/supabase';
+import ThemeToggle from './ThemeToggle';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -79,6 +80,7 @@ export default function Navbar() {
              PL
             </button>
           </li>
+          <li><ThemeToggle /></li>
           <li>
             <Link to="/admin" className="nav-login" onClick={closeMenu}>
               {isLoggedIn ? text[language].myAccount : text[language].login}

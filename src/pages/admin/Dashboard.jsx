@@ -95,6 +95,7 @@ export default function Dashboard({ onLogout }) {
   const [noteText, setNoteText] = useState('');
   const [noteMsg, setNoteMsg] = useState('');
   const [clientProfile, setClientProfile] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [invoiceMonth, setInvoiceMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -297,6 +298,13 @@ export default function Dashboard({ onLogout }) {
       <main className="admin-content">
         {activeTab === 'bookings' && (
           <div className="bookings-list">
+            <input
+              type="text"
+              className="search-input"
+              placeholder={language === 'pl' ? 'Szukaj po nazwisku, emailu lub dacie...' : 'Search by name, email or date...'}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
             {loading ? (
               <p className="loading-text">{t.loading}</p>
             ) : bookings.length === 0 ? (
@@ -315,7 +323,16 @@ export default function Dashboard({ onLogout }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {bookings.map((booking) => (
+                  {bookings
+                    .filter(b => {
+                      if (!searchQuery) return true;
+                      const q = searchQuery.toLowerCase();
+                      return b.client_name.toLowerCase().includes(q) ||
+                        b.client_email.toLowerCase().includes(q) ||
+                        b.date.includes(q) ||
+                        (b.service && b.service.toLowerCase().includes(q));
+                    })
+                    .map((booking) => (
                     <tr key={booking.id} className={`row-${booking.status}`}>
                       <td>{booking.date}</td>
                       <td>{booking.time_slot}</td>

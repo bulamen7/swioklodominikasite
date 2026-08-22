@@ -4,6 +4,7 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CookieBanner from './components/CookieBanner';
+import { ToastProvider } from './components/Toast';
 import ResetPassword from './pages/admin/ResetPassword';
 import { supabase } from './config/supabase';
 
@@ -98,9 +99,11 @@ export default function App() {
 
   return (
     <LanguageProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <ToastProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ToastProvider>
     </LanguageProvider>
   );
 }
