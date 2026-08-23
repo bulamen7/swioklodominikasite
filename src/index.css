@@ -50,14 +50,7 @@ main, .home, .contact-page, .prices-page, .about-page {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Theme toggle */
-.theme-toggle {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 0.25rem;
-}
+
 
 /* Search input */
 .search-input {
