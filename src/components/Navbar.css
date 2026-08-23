@@ -54,7 +54,7 @@
 
 .nav-menu {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   list-style: none;
   align-items: center;
 }
@@ -62,8 +62,10 @@
 .nav-menu a {
   color: var(--text-dark);
   transition: color 0.3s, background 0.3s;
-  padding: 0.4rem 0.8rem;
+  padding: 0.3rem 0.6rem;
   border-radius: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .nav-menu a:hover {
@@ -74,9 +76,10 @@
 .nav-cta {
   background: var(--primary-color);
   color: var(--white) !important;
-  padding: 0.5rem 1.5rem;
+  padding: 0.4rem 1rem;
   border-radius: 25px;
   transition: background 0.3s;
+  font-size: 0.85rem;
 }
 
 .nav-cta:hover {
@@ -126,7 +129,7 @@
   color: var(--white) !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .nav-hamburger {
     display: flex;
   }
