@@ -8,6 +8,7 @@ import ClientProfileView from './ClientProfileView';
 import StatsTab from './StatsTab';
 import PatientsTab from './PatientsTab';
 import BlogTab from './BlogTab';
+import NewsletterTab from './NewsletterTab';
 import './Admin.css';
 
 export default function Dashboard({ onLogout }) {
@@ -53,6 +54,7 @@ export default function Dashboard({ onLogout }) {
     stats: 'Statystyki',
     patients: 'Pacjenci',
     blog: 'Blog',
+    newsletter: 'Newsletter',
   } : {
     title: 'Admin Panel',
     logout: 'Log out',
@@ -94,6 +96,7 @@ export default function Dashboard({ onLogout }) {
     stats: 'Statistics',
     patients: 'Patients',
     blog: 'Blog',
+    newsletter: 'Newsletter',
   };
 
   const [bookings, setBookings] = useState([]);
@@ -302,6 +305,12 @@ export default function Dashboard({ onLogout }) {
         >
           {t.blog}
         </button>
+        <button
+          className={activeTab === 'newsletter' ? 'active' : ''}
+          onClick={() => setActiveTab('newsletter')}
+        >
+          {t.newsletter}
+        </button>
       </nav>
 
       <div className="admin-invoice-bar">
@@ -466,6 +475,8 @@ export default function Dashboard({ onLogout }) {
         {activeTab === 'patients' && <PatientsTab onViewProfile={(email, name) => setClientProfile({ email, name })} />}
 
         {activeTab === 'blog' && <BlogTab />}
+
+        {activeTab === 'newsletter' && <NewsletterTab />}
       </main>
 
       <div className="admin-invoice-bar">
