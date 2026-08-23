@@ -3,6 +3,7 @@ import { supabase } from '../../config/supabase';
 import { authFetch } from '../../config/api';
 import { useLanguage } from '../../context/LanguageContext';
 import ProfileModal from './ProfileModal';
+import BookingModal from '../../components/booking/BookingModal';
 import './Admin.css';
 
 export default function PatientDashboard({ user, onLogout }) {
@@ -19,6 +20,13 @@ export default function PatientDashboard({ user, onLogout }) {
     cancel: 'Anuluj',
     invoice: 'Faktura',
     addReview: 'Dodaj opinię',
+    reschedule: 'Przełóż',
+    rescheduleTitle: 'Przełóż wizytę',
+    payments: 'Płatności',
+    preferredTime: 'Ulubiony termin',
+    preferredTimeSaved: 'Zapisano!',
+    paid: 'Opłacona',
+    totalSpent: 'Łącznie wydano',
     reviewTitle: 'Dodaj opinię',
     reviewPlaceholder: 'Napisz swoją opinię...',
     reviewRating: 'Ocena',
@@ -54,6 +62,13 @@ export default function PatientDashboard({ user, onLogout }) {
     cancel: 'Cancel',
     invoice: 'Invoice',
     addReview: 'Add review',
+    reschedule: 'Reschedule',
+    rescheduleTitle: 'Reschedule appointment',
+    payments: 'Payments',
+    preferredTime: 'Preferred time',
+    preferredTimeSaved: 'Saved!',
+    paid: 'Paid',
+    totalSpent: 'Total spent',
     reviewTitle: 'Add a review',
     reviewPlaceholder: 'Write your review...',
     reviewRating: 'Rating',
@@ -101,6 +116,10 @@ export default function PatientDashboard({ user, onLogout }) {
   const [reviewMsg, setReviewMsg] = useState('');
   const [reviewBookingId, setReviewBookingId] = useState(null);
   const [reviewedBookings, setReviewedBookings] = useState([]);
+  const [rescheduleBooking, setRescheduleBooking] = useState(null);
+  const [showPayments, setShowPayments] = useState(false);
+  const [preferredTime, setPreferredTime] = useState('');
+  const [prefMsg, setPrefMsg] = useState('');
 
   useEffect(() => {
     fetchProfile();
@@ -115,6 +134,7 @@ export default function PatientDashboard({ user, onLogout }) {
       .eq('id', user.id)
       .single();
     setProfile(data);
+    if (data?.preferred_time) setPreferredTime(data.preferred_time);
   };
 
   const fetchMyBookings = async () => {
@@ -204,6 +224,22 @@ export default function PatientDashboard({ user, onLogout }) {
     }
   };
 
+  const handleReschedule = async (bookingId) => {
+    // Cancel old booking and open modal for new one
+    await authFetch(`/api/bookings?id=${bookingId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'cancelled' }),
+    });
+    setBookings(bookings.map(b => b.id === bookingId ? { ...b, status: 'cancelled' } : b));
+    setRescheduleBooking(bookingId);
+  };
+
+  const handleSavePreferredTime = async () => {
+    await supabase.from('profiles').update({ preferred_time: preferredTime }).eq('id', user.id);
+    setPrefMsg(t.preferredTimeSaved);
+    setTimeout(() => setPrefMsg(''), 2000);
+  };
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     const response = await fetch('/api/reviews', {
@@ -267,6 +303,11 @@ export default function PatientDashboard({ user, onLogout }) {
                         {t.cancel}
                       </button>
                     )}
+                    {booking.status === 'pending' && (
+                      <button className="mark-read-btn" onClick={() => handleReschedule(booking.id)}>
+                        {t.reschedule}
+                      </button>
+                    )}
                     {booking.status === 'completed' && (
                       <a href={`/api/invoice?id=${booking.id}`} className="invoice-btn" target="_blank" rel="noopener noreferrer">
                         {t.invoice}
@@ -284,6 +325,42 @@ export default function PatientDashboard({ user, onLogout }) {
           )}
         </div>
       </main>
+
+      {/* Payments section */}
+      <div className="admin-content">
+        <div className="admin-form-card">
+          <h3>{t.payments}</h3>
+          {(() => {
+            const completed = bookings.filter(b => b.status === 'completed');
+            const total = completed.length * 150;
+            return (
+              <div>
+                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-color)' }}>{total} zł</p>
+                <p style={{ color: 'var(--text-light)', fontSize: '0.85rem' }}>{t.totalSpent} ({completed.length} {t.visit.toLowerCase()})</p>
+              </div>
+            );
+          })()}
+        </div>
+
+        <div className="admin-form-card">
+          <h3>{t.preferredTime}</h3>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <input type="time" value={preferredTime} onChange={e => setPreferredTime(e.target.value)} style={{ padding: '0.5rem', border: '1px solid #ddd', borderRadius: '6px' }} />
+            <button className="mark-read-btn" onClick={handleSavePreferredTime}>{language === 'pl' ? 'Zapisz' : 'Save'}</button>
+            {prefMsg && <span style={{ color: '#28a745', fontSize: '0.85rem' }}>{prefMsg}</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* Reschedule modal */}
+      {rescheduleBooking && (
+        <BookingModal
+          isOpen={true}
+          onClose={() => { setRescheduleBooking(null); fetchMyBookings(); }}
+          language={language}
+          preselectedService={bookings.find(b => b.id === rescheduleBooking)?.service || ''}
+        />
+      )}
       {showChangePassword && (
         <div className="login-prompt-overlay" onClick={() => setShowChangePassword(false)}>
           <div className="login-prompt" onClick={(e) => e.stopPropagation()}>
