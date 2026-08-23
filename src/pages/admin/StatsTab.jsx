@@ -70,9 +70,11 @@ export default function StatsTab() {
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     const label = d.toLocaleString(language === 'pl' ? 'pl-PL' : 'en-US', { month: 'short', year: '2-digit' });
     const count = bookings.filter(b => b.date.startsWith(key) && b.status !== 'cancelled').length;
-    monthsData.push({ key, label, count });
+    const revenue = bookings.filter(b => b.date.startsWith(key) && b.status === 'completed').length * 150;
+    monthsData.push({ key, label, count, revenue });
   }
   const maxCount = Math.max(...monthsData.map(m => m.count), 1);
+  const maxRevenue = Math.max(...monthsData.map(m => m.revenue), 1);
 
   return (
     <div>
@@ -104,12 +106,25 @@ export default function StatsTab() {
       </div>
 
       <div className="stats-chart-section">
-        <h3>{t.last6months}</h3>
+        <h3>{t.last6months} — {t.visits}</h3>
         <div className="stats-chart">
           {monthsData.map(m => (
             <div key={m.key} className="chart-bar-wrapper">
               <div className="chart-value">{m.count}</div>
               <div className="chart-bar" style={{ height: `${(m.count / maxCount) * 150}px` }}></div>
+              <div className="chart-label">{m.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="stats-chart-section" style={{ marginTop: '1.5rem' }}>
+        <h3>{t.last6months} — {t.revenue}</h3>
+        <div className="stats-chart">
+          {monthsData.map(m => (
+            <div key={m.key + '-rev'} className="chart-bar-wrapper">
+              <div className="chart-value">{m.revenue} zł</div>
+              <div className="chart-bar" style={{ height: `${(m.revenue / maxRevenue) * 150}px`, background: 'var(--accent-color)' }}></div>
               <div className="chart-label">{m.label}</div>
             </div>
           ))}

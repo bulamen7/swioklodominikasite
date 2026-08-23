@@ -17,6 +17,7 @@ export default function PatientsTab({ onViewProfile }) {
     lastVisit: 'Ostatnia wizyta',
     viewProfile: 'Profil',
     noPatients: 'Brak pacjentów',
+    exportCSV: 'Eksport CSV',
   } : {
     title: 'Patients',
     search: 'Search patient...',
@@ -26,6 +27,7 @@ export default function PatientsTab({ onViewProfile }) {
     lastVisit: 'Last visit',
     viewProfile: 'Profile',
     noPatients: 'No patients',
+    exportCSV: 'Export CSV',
   };
 
   useEffect(() => { fetchPatients(); }, []);
@@ -66,15 +68,33 @@ export default function PatientsTab({ onViewProfile }) {
 
   if (loading) return <p className="loading-text">Loading...</p>;
 
+  const exportCSV = () => {
+    if (patients.length === 0) return;
+    const headers = ['Name', 'Email', 'Visits', 'Last Visit'];
+    const rows = patients.map(p => [p.name, p.email, p.visits, p.lastVisit]);
+    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `patients-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
-      <input
-        type="text"
-        className="search-input"
-        placeholder={t.search}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+        <input
+          type="text"
+          className="search-input"
+          placeholder={t.search}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ marginBottom: 0 }}
+        />
+        <button className="invoice-monthly-btn" onClick={exportCSV}>{t.exportCSV}</button>
+      </div>
 
       {filtered.length === 0 ? (
         <p className="empty-text">{t.noPatients}</p>

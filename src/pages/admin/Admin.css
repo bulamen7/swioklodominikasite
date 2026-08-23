@@ -815,3 +815,27 @@
   font-size: 0.75rem;
   color: var(--text-light);
 }
+
+
+/* Bell notification */
+.bell-icon {
+  position: relative;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.bell-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background: #dc3545;
+  color: white;
+  font-size: 0.65rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}

@@ -109,6 +109,7 @@ export default function Dashboard({ onLogout }) {
   const [noteMsg, setNoteMsg] = useState('');
   const [clientProfile, setClientProfile] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [invoiceMonth, setInvoiceMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -253,7 +254,18 @@ export default function Dashboard({ onLogout }) {
     <div className="admin-dashboard">
       <header className="admin-header">
         <h1>{t.title}</h1>
-        <button className="logout-btn" onClick={handleLogout}>{t.logout}</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span className="bell-icon" title={language === 'pl' ? 'Nowe' : 'New'}>
+            🔔 {(() => {
+              const unreadMsgs = messages.filter(m => !m.is_read).length;
+              const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+              const pendingReviews = reviews.filter(r => !r.is_approved).length;
+              const total = unreadMsgs + pendingBookings + pendingReviews;
+              return total > 0 ? <span className="bell-badge">{total}</span> : null;
+            })()}
+          </span>
+          <button className="logout-btn" onClick={handleLogout}>{t.logout}</button>
+        </div>
       </header>
 
       <nav className="admin-tabs">
@@ -339,7 +351,19 @@ export default function Dashboard({ onLogout }) {
               placeholder={language === 'pl' ? 'Szukaj po nazwisku, emailu lub dacie...' : 'Search by name, email or date...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ marginBottom: '0.5rem' }}
             />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ padding: '0.5rem', border: '1px solid #ddd', borderRadius: '6px', marginBottom: '1rem' }}
+            >
+              <option value="all">{language === 'pl' ? 'Wszystkie statusy' : 'All statuses'}</option>
+              <option value="pending">{t.pending}</option>
+              <option value="confirmed">{t.confirmed}</option>
+              <option value="completed">{t.completed}</option>
+              <option value="cancelled">{t.cancelled}</option>
+            </select>
             {loading ? (
               <p className="loading-text">{t.loading}</p>
             ) : bookings.length === 0 ? (
@@ -360,6 +384,7 @@ export default function Dashboard({ onLogout }) {
                 <tbody>
                   {bookings
                     .filter(b => {
+                      if (statusFilter !== 'all' && b.status !== statusFilter) return false;
                       if (!searchQuery) return true;
                       const q = searchQuery.toLowerCase();
                       return b.client_name.toLowerCase().includes(q) ||
