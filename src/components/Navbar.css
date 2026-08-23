@@ -70,11 +70,12 @@
   font-size: 0.88rem;
   font-weight: 500;
   white-space: nowrap;
+  background: rgba(45, 95, 93, 0.04);
 }
 
 .nav-menu a:hover {
   color: var(--primary-color);
-  background: rgba(45, 95, 93, 0.06);
+  background: rgba(45, 95, 93, 0.12);
 }
 
 .nav-cta {
