@@ -4,4 +4,4 @@ Allow: /
 Sitemap: https://swioklodominika.pl/sitemap.xml
 
 # Block admin panel from indexing
-Disallow: /#/admin
+Disallow: /admin

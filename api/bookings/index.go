@@ -570,7 +570,7 @@ func sendAdminNotification(clientName, clientEmail, date, timeSlot, service stri
       <td style="padding: 12px; border: 1px solid #dee2e6;">%s</td>
     </tr>
   </table>
-  <p style="color: #6c757d; font-size: 14px;"><a href="https://swioklodominika.pl/#/admin">Przejdz do panelu admina</a></p>
+  <p style="color: #6c757d; font-size: 14px;"><a href="https://swioklodominika.pl/admin">Przejdz do panelu admina</a></p>
 </div>`, clientName, clientEmail, date, timeSlot, service)
 
 	payload := map[string]interface{}{

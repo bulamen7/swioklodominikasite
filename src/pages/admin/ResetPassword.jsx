@@ -64,7 +64,7 @@ export default function ResetPassword({ onDone }) {
         <div className="login-card">
           <h1>{t.successTitle}</h1>
           <p>{t.successMsg}</p>
-          <button onClick={onDone || (() => { window.location.href = '/#/admin'; })} className="login-card-btn" style={{ border: 'none', cursor: 'pointer' }}>
+          <button onClick={onDone || (() => { window.location.href = '/admin'; })} className="login-card-btn" style={{ border: 'none', cursor: 'pointer' }}>
             {t.goToLogin}
           </button>
         </div>
