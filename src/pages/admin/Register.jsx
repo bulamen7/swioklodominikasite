@@ -7,7 +7,8 @@ export default function Register({ onSwitch }) {
   const { language } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -16,7 +17,8 @@ export default function Register({ onSwitch }) {
   const t = language === 'pl' ? {
     title: 'Rejestracja',
     subtitle: 'Utwórz konto aby zarządzać swoimi wizytami',
-    name: 'Imię i nazwisko',
+    firstName: 'Imię',
+    lastName: 'Nazwisko',
     phone: 'Telefon (opcjonalnie)',
     password: 'Hasło (min. 6 znaków)',
     loading: 'Rejestracja...',
@@ -27,12 +29,14 @@ export default function Register({ onSwitch }) {
     successMsg: 'Sprawdź email i potwierdź konto aby się zalogować.',
     goToLogin: 'Przejdź do logowania',
     errorShort: 'Hasło musi mieć minimum 6 znaków',
+    errorName: 'Imię i nazwisko są wymagane',
     errorExists: 'Ten email jest już zarejestrowany',
     errorGeneric: 'Błąd rejestracji: ',
   } : {
     title: 'Register',
     subtitle: 'Create an account to manage your appointments',
-    name: 'Full name',
+    firstName: 'First name',
+    lastName: 'Last name',
     phone: 'Phone (optional)',
     password: 'Password (min. 6 characters)',
     loading: 'Registering...',
@@ -43,6 +47,7 @@ export default function Register({ onSwitch }) {
     successMsg: 'Check your email and confirm your account to log in.',
     goToLogin: 'Go to login',
     errorShort: 'Password must be at least 6 characters',
+    errorName: 'First and last name are required',
     errorExists: 'This email is already registered',
     errorGeneric: 'Registration error: ',
   };
@@ -52,15 +57,23 @@ export default function Register({ onSwitch }) {
     setLoading(true);
     setError('');
 
+    if (!firstName || !lastName) {
+      setError(t.errorName);
+      setLoading(false);
+      return;
+    }
+
     if (password.length < 6) {
       setError(t.errorShort);
       setLoading(false);
       return;
     }
 
+    const fullName = `${firstName} ${lastName}`;
+
     const { error } = await supabase.auth.signUp({
       email, password,
-      options: { data: { full_name: fullName, phone } },
+      options: { data: { full_name: fullName, first_name: firstName, last_name: lastName, phone } },
     });
 
     if (error) {
@@ -90,7 +103,8 @@ export default function Register({ onSwitch }) {
         <h1>{t.title}</h1>
         <p>{t.subtitle}</p>
         <form onSubmit={handleSubmit}>
-          <input type="text" placeholder={t.name} value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+          <input type="text" placeholder={t.firstName} value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          <input type="text" placeholder={t.lastName} value={lastName} onChange={(e) => setLastName(e.target.value)} required />
           <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <input type="tel" placeholder={t.phone} value={phone} onChange={(e) => setPhone(e.target.value)} />
           <input type="password" placeholder={t.password} value={password} onChange={(e) => setPassword(e.target.value)} required />

@@ -5,14 +5,16 @@ import './Admin.css';
 
 export default function ProfileModal({ user, onClose }) {
   const { language } = useLanguage();
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
   const t = language === 'pl' ? {
     title: 'Mój profil',
-    name: 'Imię i nazwisko',
+    firstName: 'Imię',
+    lastName: 'Nazwisko',
     phone: 'Numer telefonu',
     loading: 'Zapisywanie...',
     submit: 'Zapisz zmiany',
@@ -21,7 +23,8 @@ export default function ProfileModal({ user, onClose }) {
     error: 'Nie udało się zapisać: ',
   } : {
     title: 'My Profile',
-    name: 'Full name',
+    firstName: 'First name',
+    lastName: 'Last name',
     phone: 'Phone number',
     loading: 'Saving...',
     submit: 'Save changes',
@@ -33,15 +36,31 @@ export default function ProfileModal({ user, onClose }) {
   useEffect(() => { fetchProfile(); }, []);
 
   const fetchProfile = async () => {
-    const { data } = await supabase.from('profiles').select('full_name, phone').eq('id', user.id).single();
-    if (data) { setFullName(data.full_name || ''); setPhone(data.phone || ''); }
+    const { data } = await supabase.from('profiles').select('first_name, last_name, full_name, phone').eq('id', user.id).single();
+    if (data) {
+      if (data.first_name) {
+        setFirstName(data.first_name);
+        setLastName(data.last_name || '');
+      } else if (data.full_name) {
+        const parts = data.full_name.split(' ');
+        setFirstName(parts[0] || '');
+        setLastName(parts.slice(1).join(' ') || '');
+      }
+      setPhone(data.phone || '');
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-    const { error } = await supabase.from('profiles').update({ full_name: fullName, phone }).eq('id', user.id);
+    const fullName = `${firstName} ${lastName}`.trim();
+    const { error } = await supabase.from('profiles').update({
+      first_name: firstName,
+      last_name: lastName,
+      full_name: fullName,
+      phone,
+    }).eq('id', user.id);
     if (error) { setMessage(t.error + error.message); }
     else { setMessage(t.success); setTimeout(() => onClose(), 1500); }
     setLoading(false);
@@ -54,8 +73,10 @@ export default function ProfileModal({ user, onClose }) {
         <form onSubmit={handleSubmit}>
           <label className="profile-label">Email</label>
           <input type="email" value={user.email} disabled className="profile-input disabled" />
-          <label className="profile-label">{t.name}</label>
-          <input type="text" placeholder={t.name} value={fullName} onChange={(e) => setFullName(e.target.value)} className="profile-input" />
+          <label className="profile-label">{t.firstName}</label>
+          <input type="text" placeholder={t.firstName} value={firstName} onChange={(e) => setFirstName(e.target.value)} className="profile-input" />
+          <label className="profile-label">{t.lastName}</label>
+          <input type="text" placeholder={t.lastName} value={lastName} onChange={(e) => setLastName(e.target.value)} className="profile-input" />
           <label className="profile-label">{language === 'pl' ? 'Telefon' : 'Phone'}</label>
           <input type="tel" placeholder={t.phone} value={phone} onChange={(e) => setPhone(e.target.value)} className="profile-input" />
           {message && (

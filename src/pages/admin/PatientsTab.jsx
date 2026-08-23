@@ -83,6 +83,7 @@ export default function PatientsTab({ onViewProfile }) {
           <thead>
             <tr>
               <th>{t.name}</th>
+              <th>{language === 'pl' ? 'Nazwisko' : 'Last name'}</th>
               <th>{t.email}</th>
               <th>{t.visits}</th>
               <th>{t.lastVisit}</th>
@@ -90,19 +91,25 @@ export default function PatientsTab({ onViewProfile }) {
             </tr>
           </thead>
           <tbody>
-            {filtered.map(p => (
-              <tr key={p.email}>
-                <td><strong>{p.name}</strong></td>
-                <td>{p.email}</td>
-                <td>{p.visits}</td>
-                <td>{p.lastVisit}</td>
-                <td>
-                  <button className="mark-read-btn" onClick={() => onViewProfile(p.email, p.name)}>
-                    {t.viewProfile}
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {filtered.map(p => {
+              const nameParts = p.name.split(' ');
+              const firstName = nameParts[0] || '';
+              const lastName = nameParts.slice(1).join(' ') || '';
+              return (
+                <tr key={p.email}>
+                  <td><strong>{firstName}</strong></td>
+                  <td>{lastName}</td>
+                  <td>{p.email}</td>
+                  <td>{p.visits}</td>
+                  <td>{p.lastVisit}</td>
+                  <td>
+                    <button className="mark-read-btn" onClick={() => onViewProfile(p.email, p.name)}>
+                      {t.viewProfile}
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

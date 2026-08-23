@@ -61,11 +61,14 @@
 
 .nav-menu a {
   color: var(--text-dark);
-  transition: color 0.3s;
+  transition: color 0.3s, background 0.3s;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
 }
 
 .nav-menu a:hover {
   color: var(--primary-color);
+  background: rgba(45, 95, 93, 0.08);
 }
 
 .nav-cta {
