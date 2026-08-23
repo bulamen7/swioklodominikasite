@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#2d5f5d" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Preconnect to external services -->
@@ -97,6 +99,13 @@
       })();
     </script>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
     <script src="https://calendar.google.com/calendar/scheduling-button-script.js" async></script>
   </body>
 </html>

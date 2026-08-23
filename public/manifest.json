@@ -1,0 +1,16 @@
+{
+  "name": "Dominika Świokło — Fizjoterapia",
+  "short_name": "Fizjoterapia",
+  "description": "Gabinet fizjoterapii dziecięcej w Warszawie",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9f7f4",
+  "theme_color": "#2d5f5d",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

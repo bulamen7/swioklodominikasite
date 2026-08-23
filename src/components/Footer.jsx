@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import Newsletter from './Newsletter';
 import './Footer.css';
 
 export default function Footer() {
@@ -62,6 +63,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
+        <Newsletter />
         <p>&copy; {new Date().getFullYear()} Dominika Świokło. {t.rights}</p>
       </div>
     </footer>

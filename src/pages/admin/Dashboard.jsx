@@ -7,6 +7,7 @@ import AvailabilityTab from './AvailabilityTab';
 import ClientProfileView from './ClientProfileView';
 import StatsTab from './StatsTab';
 import PatientsTab from './PatientsTab';
+import BlogTab from './BlogTab';
 import './Admin.css';
 
 export default function Dashboard({ onLogout }) {
@@ -51,6 +52,7 @@ export default function Dashboard({ onLogout }) {
     notes: 'Notatki',
     stats: 'Statystyki',
     patients: 'Pacjenci',
+    blog: 'Blog',
   } : {
     title: 'Admin Panel',
     logout: 'Log out',
@@ -91,6 +93,7 @@ export default function Dashboard({ onLogout }) {
     notes: 'Notes',
     stats: 'Statistics',
     patients: 'Patients',
+    blog: 'Blog',
   };
 
   const [bookings, setBookings] = useState([]);
@@ -293,6 +296,12 @@ export default function Dashboard({ onLogout }) {
         >
           {t.patients}
         </button>
+        <button
+          className={activeTab === 'blog' ? 'active' : ''}
+          onClick={() => setActiveTab('blog')}
+        >
+          {t.blog}
+        </button>
       </nav>
 
       <div className="admin-invoice-bar">
@@ -455,6 +464,8 @@ export default function Dashboard({ onLogout }) {
         {activeTab === 'stats' && <StatsTab />}
 
         {activeTab === 'patients' && <PatientsTab onViewProfile={(email, name) => setClientProfile({ email, name })} />}
+
+        {activeTab === 'blog' && <BlogTab />}
       </main>
 
       <div className="admin-invoice-bar">
