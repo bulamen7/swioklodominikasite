@@ -412,17 +412,19 @@ export default function Dashboard({ onLogout }) {
                         </select>
                       </td>
                       <td>
-                        {booking.status === 'completed' && (
-                          <a href={`/api/invoice?id=${booking.id}`} className="invoice-btn" target="_blank" rel="noopener noreferrer">
-                            {t.invoice}
-                          </a>
-                        )}
-                        <button className="mark-read-btn" onClick={() => openNoteModal(booking.id)} style={{ marginRight: '0.3rem' }}>
-                          {t.notes}
-                        </button>
-                        <button className="delete-btn" onClick={() => handleDelete(booking.id)}>
-                          {t.delete}
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                          {booking.status === 'completed' && (
+                            <a href={`/api/invoice?id=${booking.id}`} className="invoice-btn" target="_blank" rel="noopener noreferrer">
+                              {t.invoice}
+                            </a>
+                          )}
+                          <button className="mark-read-btn" onClick={() => openNoteModal(booking.id)}>
+                            {t.notes}
+                          </button>
+                          <button className="delete-btn" onClick={() => handleDelete(booking.id)}>
+                            {t.delete}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
