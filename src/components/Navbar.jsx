@@ -9,11 +9,23 @@ export default function Navbar() {
   const { language, toggleLanguage } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [services, setServices] = useState([]);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
     });
+
+    // Fetch services for dropdown
+    fetch('/api/services').then(r => r.json()).then(data => {
+      setServices(data.data || []);
+    }).catch(() => {});
+
+    // Fetch posts for dropdown
+    fetch('/api/posts').then(r => r.json()).then(data => {
+      setPosts(data.data || []);
+    }).catch(() => {});
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
@@ -61,10 +73,44 @@ export default function Navbar() {
         </button>
         <ul className={`nav-menu ${menuOpen ? 'nav-menu--open' : ''}`}>
           <li><Link to="/" onClick={closeMenu}>{text[language].home}</Link></li>
-          <li><Link to="/prices" onClick={closeMenu}>{text[language].prices}</Link></li>
+          <li className="nav-dropdown">
+            <Link to="/prices" onClick={closeMenu}>{text[language].prices}</Link>
+            {services.length > 0 && (
+              <ul className="dropdown-menu">
+                {services.map(s => (
+                  <li key={s.id}>
+                    <Link to="/prices" onClick={closeMenu}>
+                      <span>{language === 'pl' ? s.name_pl : s.name_en}</span>
+                      <span className="dropdown-price">{s.price} zł</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
           <li><Link to="/about" onClick={closeMenu}>{text[language].about}</Link></li>
-          <li><Link to="/contact" onClick={closeMenu}>{text[language].contact}</Link></li>
-          <li><Link to="/blog" onClick={closeMenu}>Blog</Link></li>
+          <li className="nav-dropdown">
+            <Link to="/contact" onClick={closeMenu}>{text[language].contact}</Link>
+            <ul className="dropdown-menu">
+              <li><a href="tel:+48797194841">📞 +48 797 194 841</a></li>
+              <li><a href="mailto:dzienkiewicz2@gmail.com">✉️ dzienkiewicz2@gmail.com</a></li>
+              <li><span>📍 Warszawa, ul. Odolańska 10</span></li>
+            </ul>
+          </li>
+          <li className="nav-dropdown">
+            <Link to="/blog" onClick={closeMenu}>Blog</Link>
+            {posts.length > 0 && (
+              <ul className="dropdown-menu">
+                {posts.slice(0, 5).map(p => (
+                  <li key={p.id}>
+                    <Link to="/blog" onClick={closeMenu}>
+                      {language === 'pl' ? p.title_pl : p.title_en}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
           <li><Link to="/prices" className="nav-cta" onClick={closeMenu}>{text[language].appointment}</Link></li>
           <li className="lang-switcher">
             <button 
