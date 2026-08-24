@@ -7,8 +7,6 @@ export default function TopBar() {
         <a href="tel:+48797194841">📞 +48 797 194 841</a>
         <span className="top-bar-divider">|</span>
         <a href="mailto:dzienkiewicz2@gmail.com">✉️ dzienkiewicz2@gmail.com</a>
-        <span className="top-bar-divider">|</span>
-        <span>📍 Warszawa, ul. Odolańska 10</span>
       </div>
     </div>
   );
