@@ -49,7 +49,6 @@ function AppContent() {
   return (
     <>
       <ScrollToTop />
-      <TopBar />
       <Navbar />
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -63,6 +62,7 @@ function AppContent() {
         </Routes>
       </Suspense>
       <Footer />
+      <TopBar />
       <CookieBanner />
     </>
   );
