@@ -232,11 +232,15 @@
   min-width: 250px;
   z-index: 200;
   list-style: none;
-  margin-top: 0.3rem;
+  padding-top: 0.8rem;
 }
 
 .nav-dropdown:hover .dropdown-menu {
   display: block;
+}
+
+.nav-dropdown > a {
+  padding-bottom: 0.8rem;
 }
 
 .dropdown-menu li a,
