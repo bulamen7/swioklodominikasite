@@ -117,7 +117,6 @@ export default function PatientDashboard({ user, onLogout }) {
   const [reviewBookingId, setReviewBookingId] = useState(null);
   const [reviewedBookings, setReviewedBookings] = useState([]);
   const [rescheduleBooking, setRescheduleBooking] = useState(null);
-  const [showPayments, setShowPayments] = useState(false);
   const [preferredTime, setPreferredTime] = useState('');
   const [prefMsg, setPrefMsg] = useState('');
 

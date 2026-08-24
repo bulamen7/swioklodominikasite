@@ -226,7 +226,7 @@ export default function Dashboard({ onLogout }) {
       const res = await fetch(`/api/notes?booking_id=${bookingId}`);
       const data = await res.json();
       if (data.data && data.data.note) setNoteText(data.data.note);
-    } catch (err) {}
+    } catch (_) {}
   };
 
   const saveNote = async () => {

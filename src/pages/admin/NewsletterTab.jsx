@@ -53,7 +53,7 @@ export default function NewsletterTab() {
       const res = await fetch('/api/newsletter');
       const data = await res.json();
       setSubscribers(data.data || []);
-    } catch (err) {}
+    } catch (_) {}
     setLoading(false);
   };
 

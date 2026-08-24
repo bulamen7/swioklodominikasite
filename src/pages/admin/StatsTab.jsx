@@ -40,7 +40,7 @@ export default function StatsTab() {
       const res = await authFetch('/api/bookings');
       const data = await res.json();
       setBookings(data.data || []);
-    } catch (err) {}
+    } catch (_) {}
     setLoading(false);
   };
 
@@ -57,7 +57,6 @@ export default function StatsTab() {
   const revenueThisMonth = completedThisMonth.length * 150; // TODO: get actual price from service
 
   // Unique patients this month (by email)
-  const allEmails = [...new Set(bookings.map(b => b.client_email))];
   const thisMonthEmails = [...new Set(thisMonthBookings.map(b => b.client_email))];
   const previousBookings = bookings.filter(b => !b.date.startsWith(currentMonth));
   const previousEmails = new Set(previousBookings.map(b => b.client_email));

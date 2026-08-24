@@ -56,7 +56,7 @@ export default function PatientsTab({ onViewProfile }) {
       });
 
       setPatients(Object.values(patientMap).sort((a, b) => b.visits - a.visits));
-    } catch (err) {}
+    } catch (_) {}
     setLoading(false);
   };
 
