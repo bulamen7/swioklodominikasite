@@ -1,0 +1,45 @@
+.top-bar {
+  background: var(--primary-color);
+  color: var(--white);
+  font-size: 0.8rem;
+  padding: 0.4rem 2rem;
+}
+
+.top-bar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.top-bar a {
+  color: var(--white);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.top-bar a:hover {
+  opacity: 0.8;
+}
+
+.top-bar-divider {
+  opacity: 0.4;
+}
+
+@media (max-width: 600px) {
+  .top-bar {
+    font-size: 0.7rem;
+    padding: 0.3rem 1rem;
+  }
+
+  .top-bar-container {
+    gap: 0.5rem;
+  }
+
+  .top-bar-divider {
+    display: none;
+  }
+}

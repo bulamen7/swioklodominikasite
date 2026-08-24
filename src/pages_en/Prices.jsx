@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import BookingModal from '../components/booking/BookingModal';
 import { supabase } from '../config/supabase';
 import './Prices.css';
@@ -10,10 +10,22 @@ export default function Prices() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [bookingService, setBookingService] = useState('');
   const [services, setServices] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
+
+      const bookParam = searchParams.get('book');
+      if (bookParam) {
+        if (session) {
+          setBookingService(decodeURIComponent(bookParam));
+          setIsModalOpen(true);
+        } else {
+          setShowLoginPrompt(true);
+        }
+        setSearchParams({});
+      }
     });
     // Fetch services from API
     fetch('/api/services').then(r => r.json()).then(data => {
