@@ -15,17 +15,6 @@ export default function Prices() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
-
-      const bookParam = searchParams.get('book');
-      if (bookParam) {
-        if (session) {
-          setBookingService(decodeURIComponent(bookParam));
-          setIsModalOpen(true);
-        } else {
-          setShowLoginPrompt(true);
-        }
-        setSearchParams({});
-      }
     });
     // Fetch services from API
     fetch('/api/services').then(r => r.json()).then(data => {
@@ -37,6 +26,20 @@ export default function Prices() {
       })));
     }).catch(() => {});
   }, []);
+
+  // Watch for ?book= param (from navbar dropdown)
+  useEffect(() => {
+    const bookParam = searchParams.get('book');
+    if (bookParam) {
+      if (isLoggedIn) {
+        setBookingService(decodeURIComponent(bookParam));
+        setIsModalOpen(true);
+      } else {
+        setShowLoginPrompt(true);
+      }
+      setSearchParams({});
+    }
+  }, [searchParams]);
 
   const handleBookClick = (serviceName) => {
     if (isLoggedIn) {
