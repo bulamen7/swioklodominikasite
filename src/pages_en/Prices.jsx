@@ -16,23 +16,16 @@ export default function Prices() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
     });
-    // Fetch services + variants from API
-    Promise.all([
-      fetch('/api/services').then(r => r.json()),
-      fetch('/api/variants').then(r => r.json()),
-    ]).then(([servicesData, variantsData]) => {
-      const variants = variantsData.data || [];
-      setServices((servicesData.data || []).map(s => {
-        const sVariants = variants.filter(v => v.service_id === s.id);
-        return {
-          id: s.id,
-          title: s.name_en,
-          duration: s.duration,
-          price: s.price + ' zł',
-          description: s.description_en || '',
-          variants: sVariants,
-        };
-      }));
+    // Fetch services (includes variants)
+    fetch('/api/services').then(r => r.json()).then(data => {
+      setServices((data.data || []).map(s => ({
+        id: s.id,
+        title: s.name_en,
+        duration: s.duration,
+        price: s.price + ' zł',
+        description: s.description_en || '',
+        variants: s.variants || [],
+      })));
     }).catch(() => {});
   }, []);
 
