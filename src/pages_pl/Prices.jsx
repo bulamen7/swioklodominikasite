@@ -31,13 +31,15 @@ export default function Prices() {
   useEffect(() => {
     const bookParam = searchParams.get('book');
     if (bookParam) {
-      if (isLoggedIn) {
-        setBookingService(decodeURIComponent(bookParam));
-        setIsModalOpen(true);
-      } else {
-        setShowLoginPrompt(true);
-      }
-      setSearchParams({});
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          setBookingService(decodeURIComponent(bookParam));
+          setIsModalOpen(true);
+        } else {
+          setShowLoginPrompt(true);
+        }
+        setSearchParams({});
+      });
     }
   }, [searchParams]);
 
