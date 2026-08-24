@@ -199,6 +199,12 @@ export default function BookingModal({ isOpen, onClose, language, preselectedSer
         <button className="booking-close" onClick={handleClose}>&times;</button>
         <h2>{isPL ? 'Umów Wizytę' : 'Book Appointment'}</h2>
 
+        {preselectedService && (
+          <div className="booking-selected-service">
+            <strong>{isPL ? 'Usługa:' : 'Service:'}</strong> {preselectedService}
+          </div>
+        )}
+
         {/* Calendar */}
         <div className="booking-calendar">
           <div className="calendar-header">

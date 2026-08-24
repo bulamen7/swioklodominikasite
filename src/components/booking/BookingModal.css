@@ -253,3 +253,13 @@
   color: var(--primary-color);
   margin: 0;
 }
+
+
+.booking-selected-service {
+  background: rgba(45, 95, 93, 0.08);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
