@@ -1,3 +1,4 @@
+import dominikPhoto from '../assets/dominika.jpeg';
 import './About.css';
 
 export default function About() {
@@ -11,8 +12,13 @@ export default function About() {
       <div className="container">
         <div className="about-content">
           <div className="about-intro">
-            <h2>Dominika Świokło, Mgr Fizjoterapii</h2>
-            <p>Absolwentka Uniwersytetu Medycznego w Łodzi i Warszawskiego Uniwersytetu Medycznego, z doświadczeniem od 2017 roku. Specjalizuję się w Integracji Sensorycznej – diagnozuję i wspiera dzieci w odkrywaniu świata zmysłów, pomagając im w pokonywaniu codziennych trudności.</p>
+            <div className="about-intro-grid">
+              <img src={dominikPhoto} alt="Dominika Świokło" className="about-photo" />
+              <div>
+                <h2>Dominika Świokło, Mgr Fizjoterapii</h2>
+                <p>Absolwentka Uniwersytetu Medycznego w Łodzi i Warszawskiego Uniwersytetu Medycznego, z doświadczeniem od 2017 roku. Specjalizuję się w Integracji Sensorycznej – diagnozuję i wspiera dzieci w odkrywaniu świata zmysłów, pomagając im w pokonywaniu codziennych trudności.</p>
+              </div>
+            </div>
           </div>
 
           <div className="about-section">
