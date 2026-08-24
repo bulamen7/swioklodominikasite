@@ -114,4 +114,6 @@ main, .home, .contact-page, .prices-page, .about-page {
 /* Space for fixed bottom bar */
 body {
   padding-bottom: 3rem;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
