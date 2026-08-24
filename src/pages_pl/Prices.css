@@ -39,9 +39,6 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.2rem;
   padding: 2.5rem 0;
-  max-height: 70vh;
-  overflow-y: auto;
-  padding-right: 0.5rem;
 }
 .price-card {
   background: var(--white);
