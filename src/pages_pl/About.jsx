@@ -17,13 +17,9 @@ export default function About() {
               <div>
                 <h2>Dominika Świokło, Mgr Fizjoterapii</h2>
                 <p>Absolwentka Uniwersytetu Medycznego w Łodzi i Warszawskiego Uniwersytetu Medycznego, z doświadczeniem od 2017 roku. Specjalizuję się w Integracji Sensorycznej – diagnozuję i wspiera dzieci w odkrywaniu świata zmysłów, pomagając im w pokonywaniu codziennych trudności.</p>
+                <p style={{ marginTop: '1rem' }}>Zafascynowana fizjoterapią, w pracy z dziećmi staram się, by każdy mały pacjent uczył się trochę anatomii i funkcjonowania ciała w praktyce. W gabinecie najważniejsza jest dla mnie relacja z dzieckiem – to dzięki niej każdy maluch czuje się bezpiecznie i otwarty na wspólną przygodę z terapią.</p>
               </div>
             </div>
-          </div>
-
-          <div className="about-section">
-            <h3>Moje Podejście</h3>
-            <p>Zafascynowana fizjoterapią, w pracy z dziećmi staram się, by każdy mały pacjent uczył się trochę anatomii i funkcjonowania ciała w praktyce. W gabinecie najważniejsza jest dla mnie relacja z dzieckiem – to dzięki niej każdy maluch czuje się bezpiecznie i otwarty na wspólną przygodę z terapią.</p>
           </div>
 
           <div className="about-section">
