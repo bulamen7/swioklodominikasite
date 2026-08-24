@@ -39,13 +39,6 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-section">
-          <h3>Dominika Świokło</h3>
-          <p>{t.address}</p>
-          <p><a href="tel:+48797194841">+48 797 194 841</a></p>
-          <p><a href="mailto:dzienkiewicz2@gmail.com">dzienkiewicz2@gmail.com</a></p>
-        </div>
-
-        <div className="footer-section">
           <h3>{t.links}</h3>
           <Link to="/">{t.home}</Link>
           <Link to="/prices">{t.prices}</Link>
