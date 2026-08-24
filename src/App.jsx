@@ -4,6 +4,7 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import TopBar from './components/TopBar';
+import ScrollToTop from './components/ScrollToTop';
 import CookieBanner from './components/CookieBanner';
 import { ToastProvider } from './components/Toast';
 import ResetPassword from './pages/admin/ResetPassword';
@@ -47,6 +48,7 @@ function AppContent() {
   
   return (
     <>
+      <ScrollToTop />
       <TopBar />
       <Navbar />
       <Suspense fallback={<PageLoader />}>
