@@ -11,15 +11,22 @@ import (
 )
 
 type Service struct {
-	ID            string  `json:"id"`
-	NamePL        string  `json:"name_pl"`
-	NameEN        string  `json:"name_en"`
-	Duration      string  `json:"duration"`
-	Price         float64 `json:"price"`
-	DescriptionPL *string `json:"description_pl,omitempty"`
-	DescriptionEN *string `json:"description_en,omitempty"`
-	IsActive      bool    `json:"is_active"`
-	SortOrder     int     `json:"sort_order"`
+	ID            string    `json:"id"`
+	NamePL        string    `json:"name_pl"`
+	NameEN        string    `json:"name_en"`
+	Duration      string    `json:"duration"`
+	Price         float64   `json:"price"`
+	DescriptionPL *string   `json:"description_pl,omitempty"`
+	DescriptionEN *string   `json:"description_en,omitempty"`
+	IsActive      bool      `json:"is_active"`
+	SortOrder     int       `json:"sort_order"`
+	Variants      []Variant `json:"variants"`
+}
+
+type Variant struct {
+	ID       string  `json:"id"`
+	Duration string  `json:"duration"`
+	Price    float64 `json:"price"`
 }
 
 type serviceRequest struct {
@@ -108,11 +115,31 @@ func handleGetServices(ctx context.Context, conn *pgx.Conn, w http.ResponseWrite
 		if err := rows.Scan(&s.ID, &s.NamePL, &s.NameEN, &s.Duration, &s.Price, &s.DescriptionPL, &s.DescriptionEN, &s.IsActive, &s.SortOrder); err != nil {
 			continue
 		}
+		s.Variants = []Variant{}
 		services = append(services, s)
 	}
 	if services == nil {
 		services = []Service{}
 	}
+
+	// Fetch variants for all services
+	varRows, err := conn.Query(ctx, "SELECT id, service_id, duration, price FROM service_variants ORDER BY sort_order ASC")
+	if err == nil {
+		defer varRows.Close()
+		for varRows.Next() {
+			var v Variant
+			var serviceID string
+			if err := varRows.Scan(&v.ID, &serviceID, &v.Duration, &v.Price); err != nil {
+				continue
+			}
+			for i := range services {
+				if services[i].ID == serviceID {
+					services[i].Variants = append(services[i].Variants, v)
+				}
+			}
+		}
+	}
+
 	writeJSON(w, http.StatusOK, response{Data: services})
 }
 

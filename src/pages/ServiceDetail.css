@@ -1,0 +1,117 @@
+.service-detail-page {
+  min-height: 100vh;
+  background: var(--bg-light);
+  padding: 3rem 2rem;
+}
+
+.service-detail-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.service-back {
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.service-detail-title {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.service-detail-description {
+  color: var(--text-light);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+}
+
+.service-variants h3 {
+  font-family: var(--font-heading);
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.variants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.variant-card {
+  background: var(--white);
+  padding: 1.2rem 1.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.variant-info {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.variant-duration {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.variant-price {
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+.variant-book-btn {
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.variant-book-btn:hover {
+  background: var(--secondary-color);
+}
+
+.service-single-option {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.single-option-info {
+  display: flex;
+  gap: 2rem;
+  color: var(--text-dark);
+}
+
+@media (max-width: 768px) {
+  .variant-card, .service-single-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .variant-info, .single-option-info {
+    gap: 1rem;
+  }
+}

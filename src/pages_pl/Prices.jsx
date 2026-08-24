@@ -16,14 +16,23 @@ export default function Prices() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
     });
-    // Fetch services from API
-    fetch('/api/services').then(r => r.json()).then(data => {
-      setServices((data.data || []).map(s => ({
-        title: s.name_pl,
-        duration: s.duration,
-        price: s.price + ' zł',
-        description: s.description_pl || '',
-      })));
+    // Fetch services + variants from API
+    Promise.all([
+      fetch('/api/services').then(r => r.json()),
+      fetch('/api/variants').then(r => r.json()),
+    ]).then(([servicesData, variantsData]) => {
+      const variants = variantsData.data || [];
+      setServices((servicesData.data || []).map(s => {
+        const sVariants = variants.filter(v => v.service_id === s.id);
+        return {
+          id: s.id,
+          title: s.name_pl,
+          duration: s.duration,
+          price: s.price + ' zł',
+          description: s.description_pl || '',
+          variants: sVariants,
+        };
+      }));
     }).catch(() => {});
   }, []);
 
@@ -67,9 +76,20 @@ export default function Prices() {
                 <h3>{service.title}</h3>
                 <span className="duration">{service.duration}</span>
               </div>
-              <div className="price-amount">{service.price}</div>
+              {service.variants && service.variants.length > 0 ? (
+                <div className="price-variants">
+                  {service.variants.map(v => (
+                    <div key={v.id} className="variant-row">
+                      <span className="variant-duration">{v.duration}</span>
+                      <span className="variant-price">{v.price} zł</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="price-amount">{service.price}</div>
+              )}
               <p className="price-description">{service.description}</p>
-              <button className="book-button" onClick={() => handleBookClick(service.title)}>Umów Wizytę</button>
+              <Link to={`/service?id=${service.id}`} className="book-button">Więcej / Umów Wizytę</Link>
             </div>
           ))}
         </div>

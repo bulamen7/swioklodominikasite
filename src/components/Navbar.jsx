@@ -94,7 +94,7 @@ export default function Navbar() {
               <ul className="dropdown-menu">
                 {services.map(s => (
                   <li key={s.id}>
-                    <Link to={`/prices?book=${encodeURIComponent(language === 'pl' ? s.name_pl : s.name_en)}`} onClick={closeMenu}>
+                    <Link to={`/service?id=${s.id}`} onClick={closeMenu}>
                       <span>{language === 'pl' ? s.name_pl : s.name_en}</span>
                       <span className="dropdown-price">{s.price} zł</span>
                     </Link>

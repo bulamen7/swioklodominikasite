@@ -20,6 +20,7 @@ const PricesPL = lazy(() => import('./pages_pl/Prices'));
 const AboutPL = lazy(() => import('./pages_pl/About'));
 const ContactPL = lazy(() => import('./pages_pl/Contact'));
 const Blog = lazy(() => import('./pages/Blog'));
+const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 
 const AdminApp = lazy(() => import('./pages/admin/AdminApp'));
 
@@ -57,6 +58,7 @@ function AppContent() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/service" element={<ServiceDetail />} />
           <Route path="/admin" element={<AdminApp />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
