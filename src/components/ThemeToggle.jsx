@@ -11,13 +11,22 @@ export default function ThemeToggle() {
   }, [dark]);
 
   return (
-    <button
-      className="theme-toggle"
-      onClick={() => setDark(!dark)}
-      aria-label="Toggle dark mode"
-      title={dark ? 'Light mode' : 'Dark mode'}
-    >
-      {dark ? '☀️' : '🌙'}
-    </button>
+    <div className="theme-switcher">
+      <button
+        onClick={() => setDark(false)}
+        className={!dark ? 'active' : ''}
+        aria-label="Light mode"
+      >
+        ☀️
+      </button>
+      <span>|</span>
+      <button
+        onClick={() => setDark(true)}
+        className={dark ? 'active' : ''}
+        aria-label="Dark mode"
+      >
+        🌙
+      </button>
+    </div>
   );
 }
