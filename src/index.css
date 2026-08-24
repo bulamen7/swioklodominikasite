@@ -5,19 +5,21 @@
 }
 
 :root {
-  --primary-color: #2d5f5d;
-  --secondary-color: #8b9d77;
-  --accent-color: #d4a574;
+  --primary-color: #5c6b5e;
+  --secondary-color: #8a9a7b;
+  --accent-color: #c9a96e;
   --text-dark: #2c2c2c;
-  --text-light: #666;
-  --bg-light: #f9f7f4;
+  --text-light: #777;
+  --bg-light: #faf8f5;
   --white: #ffffff;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
 }
 
 [data-theme="dark"] {
-  --primary-color: #6bbfb9;
+  --primary-color: #8aab8d;
   --secondary-color: #a8c490;
-  --accent-color: #e8c49a;
+  --accent-color: #e0be82;
   --text-dark: #e4e4e4;
   --text-light: #999;
   --bg-light: #1e1e1e;
@@ -25,13 +27,12 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-dark);
-  line-height: 1.6;
+  line-height: 1.7;
+  letter-spacing: -0.01em;
 }
 
 a {

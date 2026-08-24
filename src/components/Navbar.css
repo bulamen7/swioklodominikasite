@@ -17,8 +17,9 @@
 }
 
 .nav-logo {
+  font-family: var(--font-heading);
   font-size: 1.3rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--primary-color);
   letter-spacing: -0.5px;
 }
