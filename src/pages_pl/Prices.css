@@ -4,12 +4,13 @@
 .prices-header {
   position: relative;
   color: var(--white);
-  padding: 6rem 2rem;
+  padding: 4rem 2rem;
   text-align: center;
   background-image: url('/src/assets/background.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  overflow: hidden;
 }
 .prices-header::before {
   content: '';
@@ -161,8 +162,13 @@
   line-height: 1.6;
 }
 @media (max-width: 768px) {
+  .prices-header {
+    padding: 3rem 1rem;
+  }
+
   .prices-header h1 {
     font-size: 1.6rem;
+    word-wrap: break-word;
   }
 
   .prices-header p {
