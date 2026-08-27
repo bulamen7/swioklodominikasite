@@ -14,6 +14,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  overflow: visible;
 }
 
 .nav-logo {
@@ -212,6 +214,10 @@
 
   .nav-cta {
     margin-top: 0.5rem;
+  }
+
+  .nav-menu .nav-cta {
+    display: none;
   }
 }
 

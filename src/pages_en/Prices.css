@@ -164,6 +164,7 @@
 @media (max-width: 768px) {
   .prices-header {
     padding: 3rem 1rem;
+    margin: 0;
   }
 
   .prices-header h1 {
@@ -172,7 +173,8 @@
   }
 
   .prices-header p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    padding: 0 0.5rem;
   }
   
   .prices-grid {
