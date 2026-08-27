@@ -184,7 +184,7 @@
   }
 
   .price-card {
-    padding: 0.8rem 1rem;
+    padding: 0.8rem 0.8rem 0.8rem 1rem;
     border-radius: 0;
     border: none;
     border-bottom: 1px solid rgba(0,0,0,0.06);
@@ -241,7 +241,7 @@
   }
 
   .container {
-    padding: 1rem 0.5rem;
+    padding: 1rem;
   }
 
   .pricing-note {
