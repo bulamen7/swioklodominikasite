@@ -272,14 +272,10 @@
 
 @media (max-width: 900px) {
   .dropdown-menu {
-    position: static;
-    box-shadow: none;
-    padding: 0 0 0 1rem;
-    min-width: auto;
-    margin-top: 0;
+    display: none !important;
   }
 
   .nav-dropdown:hover .dropdown-menu {
-    display: block;
+    display: none !important;
   }
 }
