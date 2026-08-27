@@ -234,8 +234,8 @@
   }
 
   .book-button {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.7rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.65rem;
     white-space: nowrap;
     flex-shrink: 0;
   }
