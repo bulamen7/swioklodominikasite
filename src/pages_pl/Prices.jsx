@@ -82,7 +82,7 @@ export default function Prices() {
                 <div className="price-amount">{service.price}</div>
               )}
               <p className="price-description">{service.description}</p>
-              <Link to={`/service?id=${service.id}`} className="book-button">Więcej / Umów Wizytę</Link>
+              <Link to={`/service?id=${service.id}`} className="book-button">Umów Wizytę</Link>
             </div>
           ))}
         </div>
