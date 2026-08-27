@@ -10,12 +10,16 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" /></noscript>
 
     <!-- Preconnect to external services -->
     <link rel="preconnect" href="https://tsmrmswrpkwtbtjhnhpw.supabase.co" />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://api.resend.com" />
+
+    <!-- Preload LCP hero background -->
+    <link rel="preload" href="/src/assets/background.webp" as="image" type="image/webp" />
 
     <title>Dominika Świokło — Fizjoterapia | Warszawa</title>
     <meta name="description" content="Gabinet psychoterapii Dominika Świokło w Warszawie. Terapia indywidualna, konsultacje psychologiczne. Umów wizytę online." />
@@ -68,7 +72,7 @@
       ]
     }
     </script>
-    <link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
+    <link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet" media="print" onload="this.media='all'">
 
     <!-- Google Analytics - loads only after cookie consent -->
     <script>
@@ -94,7 +98,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.jsx" fetchpriority="high"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

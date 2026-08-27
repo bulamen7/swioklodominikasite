@@ -13,7 +13,7 @@ export default function About() {
         <div className="about-content">
           <div className="about-intro">
             <div className="about-intro-grid">
-              <img src={dominikPhoto} alt="Dominika Świokło" className="about-photo" />
+              <img src={dominikPhoto} alt="Dominika Świokło" className="about-photo" width={529} height={530} loading="lazy" decoding="async" />
               <div>
                 <h2>Dominika Świokło, Mgr Fizjoterapii</h2>
                 <p>Absolwentka Uniwersytetu Medycznego w Łodzi i Warszawskiego Uniwersytetu Medycznego, z doświadczeniem od 2017 roku. Specjalizuję się w Integracji Sensorycznej – diagnozuję i wspiera dzieci w odkrywaniu świata zmysłów, pomagając im w pokonywaniu codziennych trudności.</p>

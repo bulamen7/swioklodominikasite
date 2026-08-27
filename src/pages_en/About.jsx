@@ -13,7 +13,7 @@ export default function About() {
         <div className="about-content">
           <div className="about-intro">
             <div className="about-intro-grid">
-              <img src={dominikPhoto} alt="Dominika Świokło" className="about-photo" />
+              <img src={dominikPhoto} alt="Dominika Świokło" className="about-photo" width={529} height={530} loading="lazy" decoding="async" />
               <div>
                 <h2>Dominika Świokło, MSc in Physiotherapy</h2>
                 <p>Graduate of the Medical University of Łódź and the Medical University of Warsaw, with professional experience since 2017. I specialize in Sensory Integration – diagnosing and supporting children in discovering the world of senses, helping them overcome everyday challenges.</p>
