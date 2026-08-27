@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 :root {
   --primary-color: #5c6b5e;
   --secondary-color: #8a9a7b;
@@ -38,6 +43,10 @@ body {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+img, iframe, table {
+  max-width: 100%;
 }
 
 
@@ -114,8 +123,6 @@ main, .home, .contact-page, .prices-page, .about-page {
 /* Space for fixed bottom bar */
 body {
   padding-bottom: 3rem;
-  overflow-x: hidden;
-  overflow-y: auto;
 }
 
 /* Global mobile fixes */
