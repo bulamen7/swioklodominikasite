@@ -82,7 +82,7 @@ export default function Prices() {
                 <div className="price-amount">{service.price}</div>
               )}
               <p className="price-description">{service.description}</p>
-              <button className="book-button" onClick={() => handleBookClick(service.title)}>Book Now</button>
+              <button className="book-button book-button-pulse" onClick={() => handleBookClick(service.title)}>Book Now</button>
             </div>
           ))}
         </div>

@@ -12,6 +12,18 @@ vi.mock('../config/supabase', () => ({
   },
 }));
 
+beforeEach(() => {
+  global.fetch = vi.fn(() =>
+    Promise.resolve({ json: () => Promise.resolve({ data: [] }) })
+  );
+  Object.defineProperty(navigator, 'language', { value: 'pl-PL', configurable: true });
+  localStorage.setItem('preferredLanguage', 'pl');
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 function renderNavbar() {
   return render(
     <LanguageProvider>
@@ -23,11 +35,6 @@ function renderNavbar() {
 }
 
 describe('Navbar', () => {
-  beforeEach(() => {
-    Object.defineProperty(navigator, 'language', { value: 'pl-PL', configurable: true });
-    localStorage.setItem('preferredLanguage', 'pl');
-  });
-
   it('renders logo', () => {
     renderNavbar();
     expect(screen.getByText('Dominika Świokło')).toBeInTheDocument();
@@ -35,7 +42,7 @@ describe('Navbar', () => {
 
   it('renders navigation links', () => {
     renderNavbar();
-    expect(screen.getByText('Strona Główna')).toBeInTheDocument();
+    expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Cennik')).toBeInTheDocument();
     expect(screen.getByText('O Mnie')).toBeInTheDocument();
     expect(screen.getByText('Kontakt')).toBeInTheDocument();

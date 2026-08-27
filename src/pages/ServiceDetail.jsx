@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase } from '../config/supabase';
 import BookingModal from '../components/booking/BookingModal';
-import './ServiceDetail.css';
 import './ServiceDetail.css';
 
 export default function ServiceDetail() {
@@ -66,7 +65,13 @@ export default function ServiceDetail() {
   return (
     <div className="service-detail-page">
       <div className="service-detail-container">
-        <a href="/prices" className="service-back">{t.back}</a>
+        <nav className="breadcrumbs" aria-label="Breadcrumb">
+          <Link to="/">{language === 'pl' ? 'Strona główna' : 'Home'}</Link>
+          <span>›</span>
+          <Link to="/prices">{language === 'pl' ? 'Cennik' : 'Prices'}</Link>
+          <span>›</span>
+          <span className="breadcrumb-current">{title}</span>
+        </nav>
 
         <h1 className="service-detail-title">{title}</h1>
 
